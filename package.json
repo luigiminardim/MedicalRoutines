@@ -1,0 +1,11 @@
+{
+  "name": "rotinas-medicas",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "author": "luigiminardim",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "./packages/*"
+  ]
+}
