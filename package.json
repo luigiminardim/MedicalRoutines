@@ -12,7 +12,7 @@
     "build": "lerna run build",
     "prepare": "husky install",
     "test": "jest",
-    "lint": "eslint --fix packages/*/**"
+    "lint": "eslint --fix packages/*/src/**/*.{ts,tsx}"
   },
   "lint-staged": {
     "**/*.test.{ts,tsx,js,jsx}": [

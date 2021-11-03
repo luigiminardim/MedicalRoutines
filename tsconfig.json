@@ -1,12 +1,11 @@
 {
   "include": ["packages"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "test"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
 
     /* Projects */
     "incremental": true /* Enable incremental compilation */,
-    "tsBuildInfoFile": "dist",
 
     /* Language and Environment */
     "target": "es5" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
