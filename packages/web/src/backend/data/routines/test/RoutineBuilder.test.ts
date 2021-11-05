@@ -1,4 +1,4 @@
-import { Routine } from "@monorepo/domain";
+import { Routine } from "monorepo-domain";
 import { PageBuilder } from "../RoutineBuilder";
 import { pageResponseMock } from "./pageResponse.mock";
 

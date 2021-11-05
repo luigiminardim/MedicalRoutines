@@ -1,6 +1,6 @@
 import { Client as NotionClient } from "@notionhq/client";
-import { IRoutineRepository } from "@monorepo/domain";
-import { Routine } from "@monorepo/domain/dist/modules/routines/entities/Routine";
+import { IRoutineRepository } from "monorepo-domain";
+import { Routine } from "monorepo-domain/dist/modules/routines/entities/Routine";
 
 export class NotionRoutineRepository implements IRoutineRepository {
   constructor(private client: NotionClient) {}

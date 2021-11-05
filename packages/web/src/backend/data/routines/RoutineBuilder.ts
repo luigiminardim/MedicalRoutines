@@ -1,4 +1,4 @@
-import { Routine } from "@monorepo/domain";
+import { Routine } from "monorepo-domain";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 
 export class PageBuilder {
