@@ -1,18 +1,14 @@
-import {
-  createUseCases,
-  IAuthorsRepository,
-  ICategoryRepository,
-} from "@monorepo/domain";
+import { createUseCases, ICategoryRepository } from "@monorepo/domain";
 import { createDataLayer } from "./data/createDataLayer";
 
-const { routinesRepository } = createDataLayer();
+const { authorsRepository, routinesRepository } = createDataLayer();
 export const {
   getAuthorsUseCase,
   getCategoriesUseCase,
   getRoutineUseCase,
   getRoutinesUseCase,
 } = createUseCases(
-  {} as IAuthorsRepository,
+  authorsRepository,
   {} as ICategoryRepository,
   routinesRepository
 );

@@ -1,4 +1,5 @@
-import { Category } from "../../categories/entities/Category";
+import { Author } from "../../authors";
+import { Category } from "../../categories";
 import { Section } from "../../contents/entities/ContentBlock";
 
 export type Routine = {
@@ -8,4 +9,5 @@ export type Routine = {
   categories: Array<Category>;
   tags: string[];
   sections: Array<Section>;
+  authors: Array<Author>;
 };
