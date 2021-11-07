@@ -1,5 +1,5 @@
 import type { GetStaticProps, NextPage } from "next";
-import { routinesRepository } from "../backend";
+import { getRoutineUseCase } from "../main";
 
 const Home: NextPage = () => {
   return <div>Rotinas Médicas</div>;
@@ -8,7 +8,7 @@ const Home: NextPage = () => {
 export default Home;
 
 export const getStaticProps: GetStaticProps = () => {
-  routinesRepository.getRoutine("any");
+  getRoutineUseCase.getRoutine("any");
   return {
     props: {},
   };
