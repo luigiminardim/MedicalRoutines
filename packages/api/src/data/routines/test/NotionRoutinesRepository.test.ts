@@ -1,25 +1,32 @@
-import { Author, Routine } from "@monorepo/domain";
+import { Author, Category, Routine } from "@monorepo/domain";
 import { Client as NotionClient } from "@notionhq/client";
 import { NotionAuthorsRepository } from "../../authors";
+import { NotionCategoriesRepository } from "../../categories";
 import { NotionRoutineRepository } from "./../NotionRoutinesRepository";
 import { pageResponseMock } from "./pageResponse.mock";
 
 describe(NotionRoutineRepository, () => {
   describe("getRoutine", () => {
-    const mockAuthor: Author = {
-      id: "mockAuthor",
-    } as Author;
     const notionClientMock = {
       pages: {
         retrieve: () => pageResponseMock,
       } as any,
     } as NotionClient;
+
+    const authorMock = { id: "authorMock" } as Author;
     const authorsRespositoryMock = {
-      getAuthor: async (authorId: string) => mockAuthor,
+      getAuthor: async (authorId: string) => authorMock,
     } as NotionAuthorsRepository;
+
+    const categoryMock = { id: "categoryMock" } as Category;
+    const categoryRepositoryMock = {
+      getCategory: async (categoryId: string) => categoryMock,
+    } as NotionCategoriesRepository;
+
     const routinesRepository = new NotionRoutineRepository(
       notionClientMock,
-      authorsRespositoryMock
+      authorsRespositoryMock,
+      categoryRepositoryMock
     );
     it("should build a Routine using a PageResponse", async () => {
       expect(await routinesRepository.getRoutine("any id")).toMatchObject({
@@ -27,9 +34,9 @@ describe(NotionRoutineRepository, () => {
         name: "Rotina Teste",
         slug: "test-routine",
         tags: ["tag1", "tag2", "tag3", "tag4"],
-        categories: [],
+        categories: [categoryMock, categoryMock, categoryMock],
         sections: [],
-        authors: [mockAuthor, mockAuthor],
+        authors: [authorMock, authorMock],
       } as Routine);
     });
   });

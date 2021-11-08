@@ -3,11 +3,13 @@ import { IRoutineRepository } from "@monorepo/domain";
 import { Routine } from "@monorepo/domain/dist/modules/routines/entities/Routine";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionAuthorsRepository } from "../authors";
+import { NotionCategoriesRepository } from "../categories";
 
 export class NotionRoutineRepository implements IRoutineRepository {
   constructor(
     private client: NotionClient,
-    private authorsRespository: NotionAuthorsRepository
+    private authorsRespository: NotionAuthorsRepository,
+    private categoriesRepository: NotionCategoriesRepository
   ) {}
 
   private async buildRoutine(page: GetPageResponse): Promise<Routine> {
@@ -35,11 +37,20 @@ export class NotionRoutineRepository implements IRoutineRepository {
         .map((authorId) => this.authorsRespository.getAuthor(authorId))
     );
 
+    const categoriesProperty = page.properties["categories"];
+    if (categoriesProperty?.type !== "relation")
+      throw Error(`Invalid rotine authors property. Routine id: ${page.id}`);
+    const categories = await Promise.all(
+      categoriesProperty.relation
+        .map((x) => x.id)
+        .map((categoryId) => this.categoriesRepository.getCategory(categoryId))
+    );
+
     return {
       id: page.id,
       slug: slug,
       name,
-      categories: [],
+      categories: categories,
       tags,
       sections: [],
       authors: authors,

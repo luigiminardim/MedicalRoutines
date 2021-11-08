@@ -1,5 +1,5 @@
 import { Category } from "../entities/Category";
 
-export interface ICategoryRepository {
+export interface ICategoriesRepository {
   getCategories(): Promise<Array<Category>>;
 }
