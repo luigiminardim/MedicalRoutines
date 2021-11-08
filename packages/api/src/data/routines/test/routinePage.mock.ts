@@ -1,7 +1,7 @@
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 
 /** https://api.notion.com/v1/pages/62ef44b1-5c06-4a7b-9812-e45960c9e4ce */
-export const pageResponseMock: GetPageResponse = {
+export const routinePageMock: GetPageResponse = {
   object: "page",
   id: "62ef44b1-5c06-4a7b-9812-e45960c9e4ce",
   created_time: "2021-10-23T15:23:00.000Z",

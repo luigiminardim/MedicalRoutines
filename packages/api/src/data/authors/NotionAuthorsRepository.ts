@@ -51,6 +51,13 @@ export class NotionAuthorsRepository implements IAuthorsRepository {
   }
 
   async getAuthors(): Promise<Author[]> {
-    throw new Error("Method not implemented.");
+    const authorsDatabaseId = "59a40af1c99246fda5842e1e768ee131";
+    const authorsQuery = await this.client.databases.query({
+      database_id: authorsDatabaseId,
+    });
+    const authors = authorsQuery.results.map((authorsPage) =>
+      this.buildAuthor(authorsPage)
+    );
+    return authors;
   }
 }

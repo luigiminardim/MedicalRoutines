@@ -31,15 +31,22 @@ export class NotionCategoriesRepository implements ICategoriesRepository {
     };
   }
 
-  async getCategories(): Promise<Category[]> {
-    throw new Error("Method not implemented.");
-  }
-
   async getCategory(categoryId: Category["id"]): Promise<Category> {
     const categoryPage = await this.client.pages.retrieve({
       page_id: categoryId,
     });
     const category = this.buildCategory(categoryPage);
     return category;
+  }
+
+  async getCategories(): Promise<Category[]> {
+    const categoriesDatabaseId = "5ebe390563ab448aaec237febf1bb98d";
+    const categoriesQuery = await this.client.databases.query({
+      database_id: categoriesDatabaseId,
+    });
+    const categories = categoriesQuery.results.map((categoryPage) =>
+      this.buildCategory(categoryPage)
+    );
+    return categories;
   }
 }

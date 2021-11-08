@@ -64,7 +64,15 @@ export class NotionRoutineRepository implements IRoutineRepository {
     return this.buildRoutine(page);
   }
 
-  getRoutines(): Promise<Routine[]> {
-    throw new Error("Method not implemented.");
+  async getRoutines(): Promise<Routine[]> {
+    const routinesDatabaseId = "edfb99c1a7894667b332ab2e6d87fa1d";
+    const routinesQuery = await this.client.databases.query({
+      database_id: routinesDatabaseId,
+      sorts: [{ property: "name", direction: "ascending" }],
+    });
+    const routines = Promise.all(
+      routinesQuery.results.map((routinePage) => this.buildRoutine(routinePage))
+    );
+    return routines;
   }
 }
