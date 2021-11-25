@@ -24,6 +24,7 @@
     "prettier/prettier": "error",
     "dot-notation": "off",
     "no-use-before-define": "off",
-    "no-useless-constructor": "off"
+    "no-useless-constructor": "off",
+    "camelcase": "off"
   }
 }

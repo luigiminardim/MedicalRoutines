@@ -4,8 +4,8 @@ export type TextSpan = {
   decorations: {
     bold: boolean;
     italic: boolean;
-    underline: false;
-    subscription: boolean;
+    underline: boolean;
+    subscript: boolean;
     color: null | string;
   };
 };
@@ -29,10 +29,13 @@ export type List = {
 
 export type Figure = {
   type: "Figure";
-  iamge: {
+  image: {
+    contentType: string;
     base64: string;
+    width?: number;
+    height?: number;
   };
-  caption: RichText;
+  caption?: RichText;
 };
 
 export type Table = {

@@ -1989,10 +1989,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@notionhq/client@^0.4.6":
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/@notionhq/client/-/client-0.4.6.tgz#ca4d3de216e711d03719605066b8b32011a559e3"
-  integrity sha512-P6JLxESipVTilZl/SCnd4TKvfa6O3r4NtUcqNtcZa6tLcQjI2kM8bBLPeORQ9BHVsG922icSD45oHa/NDZ9vnA==
+"@notionhq/client@^0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@notionhq/client/-/client-0.4.9.tgz#679d103cda023f1095763c0334851aa44a624911"
+  integrity sha512-GR76TrbETlXDsCTr4TotQ/XQzi05g1ydT9iJwyB+N5Brgq6rwYaJva87y90wdI+UwiWquC1DoEHWRe7zeGClUQ==
   dependencies:
     "@types/node-fetch" "^2.5.10"
     node-fetch "^2.6.1"
@@ -2845,6 +2845,13 @@ axe-core@^4.0.2:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.3.4.tgz#4f54afff45415b5dec220dec19505beb79c5fb2f"
   integrity sha512-4Hk6iSA/H90rtiPoCpSkeJxNWCPBf7szwVvaUqrPdxo0j2Y04suHK9jPKXaE3WI7OET6wBSwsWw7FDc1DBq7iQ==
+
+axios@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
+  integrity sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
+  dependencies:
+    follow-redirects "^1.14.4"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -4566,6 +4573,11 @@ flatted@^3.1.0:
   resolved "https://registry.npmjs.org/flatted/-/flatted-3.2.2.tgz"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
+follow-redirects@^1.14.4:
+  version "1.14.5"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.5.tgz#f09a5848981d3c772b5392309778523f8d85c381"
+  integrity sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==
+
 foreach@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
@@ -5061,7 +5073,7 @@ ignore@^5.1.1, ignore@^5.1.4, ignore@^5.1.8:
   resolved "https://registry.npmjs.org/ignore/-/ignore-5.1.8.tgz"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
 
-image-size@1.0.0:
+image-size@1.0.0, image-size@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-1.0.0.tgz#58b31fe4743b1cec0a0ac26f5c914d3c5b2f0750"
   integrity sha512-JLJ6OwBfO1KcA+TvJT+v8gbE6iWbj24LyDNFgFEN0lzegn6cC6a/p3NIDaepMsJjQjlUWqIC7wJv8lBFxPNjcw==
