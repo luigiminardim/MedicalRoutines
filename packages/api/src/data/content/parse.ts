@@ -5,12 +5,16 @@ import {
   ContentBlock,
   Figure,
 } from "@monorepo/domain";
-import axios from "axios";
-import sizeOf from "image-size";
 
-type ContentParserContext = {
+export type ContentParserContext = {
   blocks: any;
   sectionLevel: number;
+  fetchImage: (url: string) => Promise<{
+    base64: string;
+    contentType: string;
+    width: number;
+    height: number;
+  }>;
 };
 
 type ContentParser<T> = (context: ContentParserContext) => Promise<null | {
@@ -134,6 +138,7 @@ const sectionParser: ContentParser<Section> = async (context) => {
         children: childrenParseResult?.content ?? [],
       },
       context: {
+        ...context,
         sectionLevel: context.sectionLevel,
         blocks: childrenParseResult?.context.blocks ?? blocks0,
       },
@@ -167,18 +172,16 @@ const figureParser: ContentParser<Figure> = async (context) => {
       block0.image.type === "file"
         ? block0.image.file.url
         : block0.image.external.url;
-    const { data: imageArrayBuffer, headers: imageResponseHeaders } =
-      await axios(imageUrl, {
-        responseType: "arraybuffer",
-      });
-    const { width, height } = sizeOf(imageArrayBuffer);
+    const { base64, contentType, width, height } = await context.fetchImage(
+      imageUrl
+    );
     return {
       context: { ...context, blocks: blocks0 },
       content: {
         type: "Figure",
         image: {
-          base64: Buffer.from(imageArrayBuffer).toString("base64"),
-          contentType: imageResponseHeaders["Content-Type"] ?? "",
+          base64,
+          contentType,
           width,
           height,
         },
@@ -198,10 +201,14 @@ const contentParser: ContentParser<ContentBlock> = async (context) => {
   );
 };
 
-export const parse = async (blocks: any): Promise<Array<Section>> => {
+export const parse = async (
+  blocks: any,
+  fetchImage: ContentParserContext["fetchImage"]
+): Promise<Array<Section>> => {
   const parserResult = await arrayParserCombiner(sectionParser)({
     blocks,
     sectionLevel: 0,
+    fetchImage,
   });
   if (parserResult) {
     return parserResult.content;
