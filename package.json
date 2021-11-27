@@ -11,7 +11,7 @@
   "scripts": {
     "build": "lerna run build",
     "dev": "lerna run --parallel dev",
-    "start:web": "lerna run --scope @monorepo/web --parallel start",
+    "dev:api": "lerna run --scope @monorepo/domain --scope @monorepo/api  --parallel dev",
     "prepare": "husky install",
     "test": "jest",
     "lint": "eslint --fix packages/*/src/**/*.{ts,tsx}"

@@ -1,27 +1,16 @@
+import { parse } from "./../parse";
 import { Figure, RichText, Section, TextSpan } from "@monorepo/domain";
 import testRoutineWithParagraph from "./testRoutineWithParagraph.json";
 import testRoutineWithSubsection from "./testRoutineWithSubsections.json";
 import testRoutineWithRichText from "./testRoutineWithRichText.json";
 import testRoutineWithFigure from "./testRoutineWithFigure.json";
-import { NotionContentsRepository } from "./../NotionContentsRepository";
-import { Client as NotionClient } from "@notionhq/client/build/src";
 
 jest.setTimeout(10000 * 1000);
 
-describe(NotionContentsRepository, () => {
-  const makeSections = async (paragraphMock: object) => {
-    const notionClient = {
-      blocks: { children: { list: () => paragraphMock } } as any,
-    } as NotionClient;
-    const contentsRepository: NotionContentsRepository =
-      new NotionContentsRepository(notionClient);
-    const sections = await contentsRepository.getSections("any page id");
-    return sections;
-  };
-
+describe(parse, () => {
   describe("getSections", () => {
     it("should create section when reaching a heading_1", async () => {
-      const sections = await makeSections(testRoutineWithParagraph);
+      const sections = await parse(testRoutineWithParagraph.results);
       const expectedFirstSection: Partial<Section> = {
         title: {
           type: "RichText",
@@ -45,7 +34,7 @@ describe(NotionContentsRepository, () => {
     });
 
     it("should convert a page with one paragraph into a section with one paragraph", async () => {
-      const sections = await makeSections(testRoutineWithParagraph);
+      const sections = await parse(testRoutineWithParagraph.results);
       const expectedParagraph: RichText = {
         type: "RichText",
         spans: [
@@ -67,7 +56,7 @@ describe(NotionContentsRepository, () => {
     });
 
     it("should indentify sections and subsections", async () => {
-      const sections = await makeSections(testRoutineWithSubsection);
+      const sections = await parse(testRoutineWithSubsection.results);
       const expectedSection = {
         type: "Section",
         plainTitle: "Seção",
@@ -89,7 +78,7 @@ describe(NotionContentsRepository, () => {
     });
 
     it("should convert paragraphs to rich text", async () => {
-      const sections = await makeSections(testRoutineWithRichText);
+      const sections = await parse(testRoutineWithRichText.results);
       const expectedSection = {
         plainTitle: "Texto rico",
         children: [
@@ -122,7 +111,7 @@ describe(NotionContentsRepository, () => {
     });
 
     it("should correctly convert figures", async () => {
-      const sections = await makeSections(testRoutineWithFigure);
+      const sections = await parse(testRoutineWithFigure.results);
       const expectedSection = {
         plainTitle: "Figura",
         children: [
