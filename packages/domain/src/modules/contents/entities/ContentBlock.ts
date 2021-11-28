@@ -30,7 +30,7 @@ export type List = {
 export type Figure = {
   type: "Figure";
   image: {
-    contentType: string;
+    format: string;
     base64: string;
     width?: number;
     height?: number;
@@ -40,9 +40,9 @@ export type Figure = {
 
 export type Table = {
   type: "Table";
-  headers: Array<ContentBlock>;
-  content: Array<Array<ContentBlock>>;
-  caption: RichText;
+  title: RichText;
+  headers: Array<RichText>;
+  content: Array<Array<RichText>>;
 };
 
 export type Section = {

@@ -1,15 +1,16 @@
 import { parse, ContentParserContext } from "./../parse";
-import { Figure, RichText, Section, TextSpan } from "@monorepo/domain";
-import testRoutineWithParagraph from "./testRoutineWithParagraph.json";
-import testRoutineWithSubsection from "./testRoutineWithSubsections.json";
-import testRoutineWithRichText from "./testRoutineWithRichText.json";
-import testRoutineWithFigure from "./testRoutineWithFigure.json";
+import { Figure, RichText, Section, TextSpan, Table } from "@monorepo/domain";
+import testRoutineWithParagraph from "./mocks/testRoutineWithParagraph.json";
+import testRoutineWithSubsection from "./mocks/testRoutineWithSubsections.json";
+import testRoutineWithRichText from "./mocks/testRoutineWithRichText.json";
+import testRoutineWithFigure from "./mocks/testRoutineWithFigure.json";
+import fs from "fs";
 
 jest.setTimeout(10000 * 1000);
 
 describe(parse, () => {
-  const fetchImageMock: ContentParserContext["fetchImage"] = async (url) =>
-    ({} as any);
+  const fetchImageMock: ContentParserContext["fetchImage"] = async (anyUrl) =>
+    fs.readFileSync("packages/api/src/data/content/test/mocks/test image.png");
   it("should create section when reaching a heading_1", async () => {
     const sections = await parse(
       testRoutineWithParagraph.results,
@@ -130,7 +131,11 @@ describe(parse, () => {
       children: [
         {
           type: "Figure",
-          image: {},
+          image: {
+            format: "png",
+            height: 100,
+            width: 200,
+          },
           caption: {
             type: "RichText",
             spans: [{ type: "TextSpan", string: "Legenda da figura" }],
@@ -141,4 +146,5 @@ describe(parse, () => {
     expect(sections[0]).toMatchObject(expectedSection);
     await new Promise((resolve) => setTimeout(resolve, 4000));
   });
+
 });

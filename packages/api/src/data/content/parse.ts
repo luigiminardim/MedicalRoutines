@@ -1,3 +1,4 @@
+import sizeOf from "image-size";
 import {
   RichText,
   TextSpan,
@@ -9,12 +10,7 @@ import {
 export type ContentParserContext = {
   blocks: any;
   sectionLevel: number;
-  fetchImage: (url: string) => Promise<{
-    base64: string;
-    contentType: string;
-    width: number;
-    height: number;
-  }>;
+  fetchImage: (url: string) => Promise<Buffer>;
 };
 
 type ContentParser<T> = (context: ContentParserContext) => Promise<null | {
@@ -172,18 +168,17 @@ const figureParser: ContentParser<Figure> = async (context) => {
       block0.image.type === "file"
         ? block0.image.file.url
         : block0.image.external.url;
-    const { base64, contentType, width, height } = await context.fetchImage(
-      imageUrl
-    );
+    const imageBuffer = await context.fetchImage(imageUrl);
+    const { height, width, type } = sizeOf(imageBuffer);
     return {
       context: { ...context, blocks: blocks0 },
       content: {
         type: "Figure",
         image: {
-          base64,
-          contentType,
-          width,
-          height,
+          base64: imageBuffer.toString("base64"),
+          format: type ?? "",
+          width: width ?? 0,
+          height: height ?? 0,
         },
         caption: block0.image.caption
           ? richTextConverter(block0.image.caption)
