@@ -1,3 +1,7 @@
+import {
+  GetDatabaseResponse,
+  QueryDatabaseResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 import sizeOf from "image-size";
 import {
   RichText,
@@ -5,18 +9,41 @@ import {
   Section,
   ContentBlock,
   Figure,
+  Table,
 } from "@monorepo/domain";
 
 export type ContentParserContext = {
   blocks: any;
   sectionLevel: number;
   fetchImage: (url: string) => Promise<Buffer>;
+  fetchTable: (
+    tableId: string
+  ) => Promise<{ database: GetDatabaseResponse; query: QueryDatabaseResponse }>;
 };
 
 type ContentParser<T> = (context: ContentParserContext) => Promise<null | {
   content: T;
   context: ContentParserContext;
 }>;
+
+function richTextFromString(string: string): RichText {
+  return {
+    type: "RichText",
+    spans: [
+      {
+        type: "TextSpan",
+        string,
+        decorations: {
+          bold: false,
+          color: null,
+          italic: false,
+          subscript: false,
+          underline: false,
+        },
+      },
+    ],
+  };
+}
 
 const richTextConverter = (notionRichText: Array<any>): RichText => {
   return {
@@ -188,22 +215,79 @@ const figureParser: ContentParser<Figure> = async (context) => {
   }
 };
 
+const tableParser: ContentParser<Table> = async (context) => {
+  const { blocks } = context;
+  const [block0, ...blocks0] = blocks;
+  if (block0?.type !== "child_database") {
+    return null;
+  } else {
+    const getHeader = (property: any) => {
+      const headerRegex = /^(\d)*\. (.*)$/gm; // 1. Header => [, "1", "Header"]
+      const [, positonStr = "0", header = ""] =
+        headerRegex.exec(property) ?? [];
+      const position = Number.parseFloat(positonStr);
+      return { position, header };
+    };
+
+    const { database, query } = (await context.fetchTable(block0.id)) as any;
+    const dataProperties = Object.keys(database.properties)
+      .filter((p) => p !== "#")
+      .sort((a, b) => {
+        const { position: a_p } = getHeader(a);
+        const { position: b_p } = getHeader(b);
+        return a_p < b_p ? -1 : a_p === b_p ? 0 : 1;
+      });
+    return {
+      context: {
+        ...context,
+        blocks: blocks0,
+      },
+      content: {
+        type: "Table",
+        title: richTextConverter(database.title),
+        headers: dataProperties
+          .map((property) => {
+            const { header } = getHeader(property);
+            return header;
+          })
+          .map(richTextFromString),
+        content: query.results.map((row: any) =>
+          dataProperties.map((col) => {
+            const data = row.properties[col] as any;
+            const notionRichText = data["title"] || data["rich_text"];
+            if (!notionRichText) {
+              throw Error(
+                `Can't parse data in table: ${database.id} - ${block0.child_database.title}`
+              );
+            } else {
+              return richTextConverter(notionRichText);
+            }
+          })
+        ),
+      },
+    };
+  }
+};
+
 const contentParser: ContentParser<ContentBlock> = async (context) => {
   return (
     (await sectionParser(context)) ||
     (await paragraphParser(context)) ||
-    (await figureParser(context))
+    (await figureParser(context)) ||
+    (await tableParser(context))
   );
 };
 
 export const parse = async (
   blocks: any,
-  fetchImage: ContentParserContext["fetchImage"]
+  fetchImage: ContentParserContext["fetchImage"],
+  fetchTable: ContentParserContext["fetchTable"]
 ): Promise<Array<Section>> => {
   const parserResult = await arrayParserCombiner(sectionParser)({
     blocks,
     sectionLevel: 0,
     fetchImage,
+    fetchTable,
   });
   if (parserResult) {
     return parserResult.content;

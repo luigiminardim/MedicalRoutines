@@ -14,13 +14,26 @@ export class NotionContentsRepository {
     return Buffer.from(imageArrayBuffer);
   }
 
+  private async fetchTable(tableId: string) {
+    const database = await this.client.databases.retrieve({
+      database_id: tableId,
+    });
+    const query = await this.client.databases.query({
+      database_id: tableId,
+      sorts: [{ property: "#", direction: "ascending" }],
+    });
+    return { database, query };
+  }
+
   async getSections(pageId: string): Promise<Array<Section>> {
     const blockChildren: ListBlockChildrenResponse =
       await this.client.blocks.children.list({
         block_id: pageId,
       });
-    const sections = await parse(blockChildren.results, (url: string) =>
-      this.fetchImage(url)
+    const sections = await parse(
+      blockChildren.results,
+      (url: string) => this.fetchImage(url),
+      (tableId: string) => this.fetchTable(tableId)
     );
     return sections;
   }

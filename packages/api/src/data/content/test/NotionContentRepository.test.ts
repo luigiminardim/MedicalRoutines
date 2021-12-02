@@ -4,17 +4,21 @@ import testRoutineWithParagraph from "./mocks/testRoutineWithParagraph.json";
 import testRoutineWithSubsection from "./mocks/testRoutineWithSubsections.json";
 import testRoutineWithRichText from "./mocks/testRoutineWithRichText.json";
 import testRoutineWithFigure from "./mocks/testRoutineWithFigure.json";
+import testRoutineWithTable from "./mocks/testRoutineWithTable.json";
+import queryTableMock from "./mocks/queryTable.json";
+import retrieveTableMock from "./mocks/retrieveTable.json";
 import fs from "fs";
-
-jest.setTimeout(10000 * 1000);
 
 describe(parse, () => {
   const fetchImageMock: ContentParserContext["fetchImage"] = async (anyUrl) =>
     fs.readFileSync("packages/api/src/data/content/test/mocks/test image.png");
+  const fetchTableMock: ContentParserContext["fetchTable"] = async (anyUrl) =>
+    ({ database: retrieveTableMock, query: queryTableMock } as any);
   it("should create section when reaching a heading_1", async () => {
     const sections = await parse(
       testRoutineWithParagraph.results,
-      fetchImageMock
+      fetchImageMock,
+      fetchTableMock
     );
     const expectedFirstSection: Partial<Section> = {
       title: {
@@ -41,7 +45,8 @@ describe(parse, () => {
   it("should convert a page with one paragraph into a section with one paragraph", async () => {
     const sections = await parse(
       testRoutineWithParagraph.results,
-      fetchImageMock
+      fetchImageMock,
+      fetchTableMock
     );
     const expectedParagraph: RichText = {
       type: "RichText",
@@ -66,7 +71,8 @@ describe(parse, () => {
   it("should indentify sections and subsections", async () => {
     const sections = await parse(
       testRoutineWithSubsection.results,
-      fetchImageMock
+      fetchImageMock,
+      fetchTableMock
     );
     const expectedSection = {
       type: "Section",
@@ -91,7 +97,8 @@ describe(parse, () => {
   it("should convert paragraphs to rich text", async () => {
     const sections = await parse(
       testRoutineWithRichText.results,
-      fetchImageMock
+      fetchImageMock,
+      fetchTableMock
     );
     const expectedSection = {
       plainTitle: "Texto rico",
@@ -125,7 +132,11 @@ describe(parse, () => {
   });
 
   it("should correctly convert figures", async () => {
-    const sections = await parse(testRoutineWithFigure.results, fetchImageMock);
+    const sections = await parse(
+      testRoutineWithFigure.results,
+      fetchImageMock,
+      fetchTableMock
+    );
     const expectedSection = {
       plainTitle: "Figura",
       children: [
@@ -144,7 +155,62 @@ describe(parse, () => {
       ],
     } as Section;
     expect(sections[0]).toMatchObject(expectedSection);
-    await new Promise((resolve) => setTimeout(resolve, 4000));
   });
 
+  it("should correctly convert tables", async () => {
+    const sections = await parse(
+      testRoutineWithTable.results,
+      fetchImageMock,
+      fetchTableMock
+    );
+    const expectedSection = {
+      plainTitle: "Tabela",
+      children: [
+        {
+          type: "Table",
+          title: {
+            type: "RichText",
+            spans: [{ string: "Título da tabela" } as TextSpan],
+          },
+          headers: [
+            {
+              spans: [
+                { string: "Título da Coluna Um Com um nome muito grande" },
+              ],
+            },
+            {
+              spans: [{ string: "Título da Coluna Dois" }],
+            },
+            {
+              spans: [{ string: "Título da coluna Três" }],
+            },
+          ],
+        } as Table,
+      ],
+    } as Section;
+    const expectedContent_0_0 = {
+      spans: [{ string: "Escreva com strings nas tabelas" }],
+    };
+    const expectedContent_0_1 = {
+      spans: [
+        { string: "Se necessário, use textos em " },
+        { string: "negrito " },
+        { string: "ou " },
+        { string: "itálico" },
+      ],
+    };
+    const expectedContent_2_2 = {
+      spans: [{ string: "conteúdo" }],
+    };
+    expect(sections[0]).toMatchObject(expectedSection);
+    expect((sections[0]?.children[0] as any).content[0][0]).toMatchObject(
+      expectedContent_0_0
+    );
+    expect((sections[0]?.children[0] as any).content[0][1]).toMatchObject(
+      expectedContent_0_1
+    );
+    expect((sections[0]?.children[0] as any).content[2][2]).toMatchObject(
+      expectedContent_2_2
+    );
+  });
 });
