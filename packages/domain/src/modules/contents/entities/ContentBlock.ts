@@ -18,7 +18,7 @@ export type RichText = {
 export type ListItem = {
   type: "ListItem";
   text: RichText;
-  children: null | ContentBlock;
+  children: null | Array<ContentBlock>;
 };
 
 export type List = {

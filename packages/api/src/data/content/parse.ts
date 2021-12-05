@@ -10,6 +10,8 @@ import {
   ContentBlock,
   Figure,
   Table,
+  ListItem,
+  List,
 } from "@monorepo/domain";
 
 export type ContentParserContext = {
@@ -19,6 +21,7 @@ export type ContentParserContext = {
   fetchTable: (
     tableId: string
   ) => Promise<{ database: GetDatabaseResponse; query: QueryDatabaseResponse }>;
+  fetchChildren: (blockId: string) => Promise<any>;
 };
 
 type ContentParser<T> = (context: ContentParserContext) => Promise<null | {
@@ -98,20 +101,28 @@ const richTextConverter = (notionRichText: Array<any>): RichText => {
 const arrayParserCombiner: <T>(
   parser: ContentParser<T>
 ) => ContentParser<Array<T>> = (parser) => async (context) => {
-  const parseResult = await parser(context);
-  if (!parseResult) {
-    return { content: [], context };
+  const { blocks } = context;
+  if (blocks.length === 0) {
+    return {
+      context,
+      content: [],
+    };
   } else {
-    const { content: content0, context: context0 } = parseResult;
-    const restParseResult = await arrayParserCombiner(parser)(context0);
-    if (!restParseResult) {
-      return null;
+    const parseResult = await parser(context);
+    if (!parseResult) {
+      return { content: [], context };
     } else {
-      const { content: contents1, context: context1 } = restParseResult;
-      return {
-        content: [content0, ...contents1],
-        context: context1,
-      };
+      const { content: content0, context: context0 } = parseResult;
+      const restParseResult = await arrayParserCombiner(parser)(context0);
+      if (!restParseResult) {
+        return null;
+      } else {
+        const { content: contents1, context: context1 } = restParseResult;
+        return {
+          content: [content0, ...contents1],
+          context: context1,
+        };
+      }
     }
   }
 };
@@ -269,25 +280,74 @@ const tableParser: ContentParser<Table> = async (context) => {
   }
 };
 
+const orderedListItemParser: ContentParser<ListItem> = async (context) => {
+  const { blocks } = context;
+  const [block0, ...blocks0] = blocks;
+  if (block0.type === "numbered_list_item") {
+    return {
+      context: {
+        ...context,
+        blocks: blocks0,
+      },
+      content: {
+        type: "ListItem",
+        text: richTextConverter(block0.numbered_list_item.text),
+        children: block0.has_children
+          ? (
+              await arrayParserCombiner(contentParser)({
+                ...context,
+                blocks: (await context.fetchChildren(block0.id))?.results ?? [],
+              })
+            )?.content ?? null
+          : null,
+      },
+    };
+  } else {
+    return null;
+  }
+};
+
+const listParser: ContentParser<List> = async (context) => {
+  const numberedItemResult = await arrayParserCombiner(orderedListItemParser)(
+    context
+  );
+  if (numberedItemResult && numberedItemResult.content.length !== 0) {
+    const { content, context } = numberedItemResult;
+    return {
+      content: {
+        type: "List",
+        kind: "ordered",
+        items: content,
+      },
+      context,
+    };
+  } else {
+    return null;
+  }
+};
+
 const contentParser: ContentParser<ContentBlock> = async (context) => {
   return (
     (await sectionParser(context)) ||
     (await paragraphParser(context)) ||
     (await figureParser(context)) ||
-    (await tableParser(context))
+    (await tableParser(context)) ||
+    (await listParser(context))
   );
 };
 
 export const parse = async (
   blocks: any,
   fetchImage: ContentParserContext["fetchImage"],
-  fetchTable: ContentParserContext["fetchTable"]
+  fetchTable: ContentParserContext["fetchTable"],
+  fetchChildren: ContentParserContext["fetchChildren"]
 ): Promise<Array<Section>> => {
   const parserResult = await arrayParserCombiner(sectionParser)({
     blocks,
     sectionLevel: 0,
     fetchImage,
     fetchTable,
+    fetchChildren,
   });
   if (parserResult) {
     return parserResult.content;

@@ -5,6 +5,9 @@ import testRoutineWithSubsection from "./mocks/testRoutineWithSubsections.json";
 import testRoutineWithRichText from "./mocks/testRoutineWithRichText.json";
 import testRoutineWithFigure from "./mocks/testRoutineWithFigure.json";
 import testRoutineWithTable from "./mocks/testRoutineWithTable.json";
+import testRoutineWithNumberedList from "./mocks/testRoutineWithNumberedList.json";
+import listChildren1 from "./mocks/ListItemChildren7015eebd-3e1a-4e5a-8658-6865ea30d795.json";
+import listChildren2 from "./mocks/LilstItemChildren289c3fff-e73e-4708-803a-537b95607ab4.json";
 import queryTableMock from "./mocks/queryTable.json";
 import retrieveTableMock from "./mocks/retrieveTable.json";
 import fs from "fs";
@@ -12,13 +15,23 @@ import fs from "fs";
 describe(parse, () => {
   const fetchImageMock: ContentParserContext["fetchImage"] = async (anyUrl) =>
     fs.readFileSync("packages/api/src/data/content/test/mocks/test image.png");
+
   const fetchTableMock: ContentParserContext["fetchTable"] = async (anyUrl) =>
     ({ database: retrieveTableMock, query: queryTableMock } as any);
+
+  const fetchChildren = async (blockId: string) =>
+    blockId === "7015eebd-3e1a-4e5a-8658-6865ea30d795"
+      ? listChildren1
+      : blockId === "289c3fff-e73e-4708-803a-537b95607ab4"
+      ? listChildren2
+      : null;
+
   it("should create section when reaching a heading_1", async () => {
     const sections = await parse(
       testRoutineWithParagraph.results,
       fetchImageMock,
-      fetchTableMock
+      fetchTableMock,
+      fetchChildren
     );
     const expectedFirstSection: Partial<Section> = {
       title: {
@@ -46,7 +59,8 @@ describe(parse, () => {
     const sections = await parse(
       testRoutineWithParagraph.results,
       fetchImageMock,
-      fetchTableMock
+      fetchTableMock,
+      fetchChildren
     );
     const expectedParagraph: RichText = {
       type: "RichText",
@@ -72,7 +86,8 @@ describe(parse, () => {
     const sections = await parse(
       testRoutineWithSubsection.results,
       fetchImageMock,
-      fetchTableMock
+      fetchTableMock,
+      fetchChildren
     );
     const expectedSection = {
       type: "Section",
@@ -98,7 +113,8 @@ describe(parse, () => {
     const sections = await parse(
       testRoutineWithRichText.results,
       fetchImageMock,
-      fetchTableMock
+      fetchTableMock,
+      fetchChildren
     );
     const expectedSection = {
       plainTitle: "Texto rico",
@@ -135,7 +151,8 @@ describe(parse, () => {
     const sections = await parse(
       testRoutineWithFigure.results,
       fetchImageMock,
-      fetchTableMock
+      fetchTableMock,
+      fetchChildren
     );
     const expectedSection = {
       plainTitle: "Figura",
@@ -161,7 +178,8 @@ describe(parse, () => {
     const sections = await parse(
       testRoutineWithTable.results,
       fetchImageMock,
-      fetchTableMock
+      fetchTableMock,
+      fetchChildren
     );
     const expectedSection = {
       plainTitle: "Tabela",
@@ -212,5 +230,74 @@ describe(parse, () => {
     expect((sections[0]?.children[0] as any).content[2][2]).toMatchObject(
       expectedContent_2_2
     );
+  });
+
+  it("should covert a numbered list", async () => {
+    const sections = await parse(
+      testRoutineWithNumberedList.results,
+      fetchImageMock,
+      fetchTableMock,
+      fetchChildren
+    );
+    const expectedSection = {
+      plainTitle: "Listas",
+      children: [
+        {
+          type: "List",
+          kind: "ordered",
+          items: [
+            {
+              type: "ListItem",
+              text: {
+                type: "RichText",
+                spans: [{ string: "Primeiro item da lista;" }],
+              },
+            },
+            {
+              type: "ListItem",
+              text: {
+                type: "RichText",
+                spans: [
+                  {
+                    string:
+                      "Item muito muito muito muito muito muito longo da lista;",
+                  },
+                ],
+              },
+              children: [
+                {
+                  type: "List",
+                  kind: "ordered",
+                  items: [
+                    {
+                      type: "ListItem",
+                      text: {
+                        type: "RichText",
+                        spans: [{ string: "Lista interna à lista" }],
+                      },
+                      children: [
+                        {
+                          type: "List",
+                          kind: "ordered",
+                          items: [
+                            {
+                              type: "ListItem",
+                              children: null,
+                              text: { spans: [{ string: "Mais um nível;" }] },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    } as Section;
+
+    expect(sections[0]).toMatchObject(expectedSection);
   });
 });

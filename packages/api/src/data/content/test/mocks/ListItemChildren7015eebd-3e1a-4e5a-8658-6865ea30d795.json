@@ -1,0 +1,37 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "block",
+      "id": "289c3fff-e73e-4708-803a-537b95607ab4",
+      "created_time": "2021-10-24T22:08:00.000Z",
+      "last_edited_time": "2021-10-24T22:12:00.000Z",
+      "has_children": true,
+      "archived": false,
+      "type": "numbered_list_item",
+      "numbered_list_item": {
+        "text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Lista interna à lista",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Lista interna à lista",
+            "href": null
+          }
+        ]
+      }
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false
+}

@@ -25,6 +25,11 @@ export class NotionContentsRepository {
     return { database, query };
   }
 
+  async fetchChildren(blockId: string) {
+    return (await this.client.blocks.children.list({ block_id: blockId }))
+      .results;
+  }
+
   async getSections(pageId: string): Promise<Array<Section>> {
     const blockChildren: ListBlockChildrenResponse =
       await this.client.blocks.children.list({
@@ -33,7 +38,8 @@ export class NotionContentsRepository {
     const sections = await parse(
       blockChildren.results,
       (url: string) => this.fetchImage(url),
-      (tableId: string) => this.fetchTable(tableId)
+      (tableId: string) => this.fetchTable(tableId),
+      (blockId: string) => this.fetchChildren(blockId)
     );
     return sections;
   }
