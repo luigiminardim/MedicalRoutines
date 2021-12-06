@@ -36,6 +36,7 @@ function richTextFromString(string: string): RichText {
       {
         type: "TextSpan",
         string,
+        link: null,
         decorations: {
           bold: false,
           color: null,
@@ -56,6 +57,9 @@ const richTextConverter = (notionRichText: Array<any>): RichText => {
         return {
           type: "TextSpan",
           string: text.text.content,
+          link: text.text.link?.url
+            ? { type: "url", url: text.text.link.url }
+            : null,
           decorations: {
             bold: text.annotations.bold,
             color:
@@ -76,6 +80,7 @@ const richTextConverter = (notionRichText: Array<any>): RichText => {
           return {
             type: "TextSpan",
             string: subscriptRegexResult[1],
+            link: null,
             decorations: {
               subscript: true,
               color: text.annotations.color,

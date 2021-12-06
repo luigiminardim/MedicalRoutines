@@ -1,6 +1,10 @@
 export type TextSpan = {
   type: "TextSpan";
   string: string;
+  link: null | {
+    type: "url";
+    url: string;
+  };
   decorations: {
     bold: boolean;
     italic: boolean;

@@ -334,8 +334,8 @@
         ],
         "type": "file",
         "file": {
-          "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/44b513c5-32fe-4111-98de-382bf5067c52/scorpion.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20211121%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20211121T193338Z&X-Amz-Expires=3600&X-Amz-Signature=1f2640bf75b9901e0236894090e4cda9a81541570e7f085212f9fb7c8e8a5905&X-Amz-SignedHeaders=host&x-id=GetObject",
-          "expiry_time": "2021-11-21T20:33:38.679Z"
+          "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/44b513c5-32fe-4111-98de-382bf5067c52/scorpion.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20211205%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20211205T200103Z&X-Amz-Expires=3600&X-Amz-Signature=c5009f69824c863be49daba87873dc4aeb19948fa87efbcfb15bc068b25d2ec4&X-Amz-SignedHeaders=host&x-id=GetObject",
+          "expiry_time": "2021-12-05T21:01:03.584Z"
         }
       }
     },
@@ -373,7 +373,7 @@
       "object": "block",
       "id": "ab4c813b-0709-4cd4-9a41-7ba03d65ba55",
       "created_time": "2021-10-24T21:58:00.000Z",
-      "last_edited_time": "2021-11-21T15:38:00.000Z",
+      "last_edited_time": "2021-12-02T01:56:00.000Z",
       "has_children": false,
       "archived": false,
       "type": "child_database",
@@ -535,7 +535,7 @@
       "object": "block",
       "id": "1197eeed-d6b3-458f-b0f9-2be83dda9d57",
       "created_time": "2021-10-24T22:11:00.000Z",
-      "last_edited_time": "2021-10-24T22:11:00.000Z",
+      "last_edited_time": "2021-12-05T20:00:00.000Z",
       "has_children": false,
       "archived": false,
       "type": "numbered_list_item",
@@ -544,8 +544,10 @@
           {
             "type": "text",
             "text": {
-              "content": "Krugman S, Katz SL, Gershon AA, Wilfert CM. Doenças Infecciosas na Infância. 9.ed. Rio de Janeiro: Guanabara Koogan; 1994.",
-              "link": null
+              "content": "Gomes, PB, Melo MOCB, Duarte MA, Torres MRF, Xavier AT (2011). Polietilenoglicol na constipação intestinal crônica funcional em crianças. Revista Paulista de Pediatria, 29(2),245-250. https://dx.doi.org/10.1590/S0103-05822011000200017",
+              "link": {
+                "url": "https://dx.doi.org/10.1590/S0103-05822011000200017"
+              }
             },
             "annotations": {
               "bold": false,
@@ -555,68 +557,8 @@
               "code": false,
               "color": "default"
             },
-            "plain_text": "Krugman S, Katz SL, Gershon AA, Wilfert CM. Doenças Infecciosas na Infância. 9.ed. Rio de Janeiro: Guanabara Koogan; 1994.",
-            "href": null
-          }
-        ]
-      }
-    },
-    {
-      "object": "block",
-      "id": "56e42781-ae9d-40db-915a-ef38e0cef81c",
-      "created_time": "2021-10-24T22:11:00.000Z",
-      "last_edited_time": "2021-10-24T22:11:00.000Z",
-      "has_children": false,
-      "archived": false,
-      "type": "numbered_list_item",
-      "numbered_list_item": {
-        "text": [
-          {
-            "type": "text",
-            "text": {
-              "content": "Kelly CS, Kelly Jr RE. Lymphadenopathy in Children. Pediatr Clin North Am 1998 Aug;45 (4):875-88.",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "Kelly CS, Kelly Jr RE. Lymphadenopathy in Children. Pediatr Clin North Am 1998 Aug;45 (4):875-88.",
-            "href": null
-          }
-        ]
-      }
-    },
-    {
-      "object": "block",
-      "id": "eb9eb05c-9319-4b03-b855-7b659e04f19c",
-      "created_time": "2021-10-24T22:11:00.000Z",
-      "last_edited_time": "2021-10-24T22:22:00.000Z",
-      "has_children": false,
-      "archived": false,
-      "type": "numbered_list_item",
-      "numbered_list_item": {
-        "text": [
-          {
-            "type": "text",
-            "text": {
-              "content": "Freire LM, Teixeira Júnior JF. Diagnóstico Diferencial das Adenomegalias. In: : Tonelli E, Freire LM, editors. Doenças Infecciosas na Infância e Adolescência. 2.ed. Rio de Janeiro: Editora Medsi; 2000. p.1850-67.",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "Freire LM, Teixeira Júnior JF. Diagnóstico Diferencial das Adenomegalias. In: : Tonelli E, Freire LM, editors. Doenças Infecciosas na Infância e Adolescência. 2.ed. Rio de Janeiro: Editora Medsi; 2000. p.1850-67.",
-            "href": null
+            "plain_text": "Gomes, PB, Melo MOCB, Duarte MA, Torres MRF, Xavier AT (2011). Polietilenoglicol na constipação intestinal crônica funcional em crianças. Revista Paulista de Pediatria, 29(2),245-250. https://dx.doi.org/10.1590/S0103-05822011000200017",
+            "href": "https://dx.doi.org/10.1590/S0103-05822011000200017"
           }
         ]
       }

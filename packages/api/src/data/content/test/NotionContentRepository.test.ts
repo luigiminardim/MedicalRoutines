@@ -8,6 +8,7 @@ import testRoutineWithTable from "./mocks/testRoutineWithTable.json";
 import testRoutineWithNumberedList from "./mocks/testRoutineWithNumberedList.json";
 import listChildren1 from "./mocks/ListItemChildren7015eebd-3e1a-4e5a-8658-6865ea30d795.json";
 import listChildren2 from "./mocks/LilstItemChildren289c3fff-e73e-4708-803a-537b95607ab4.json";
+import testRoutineWithReferences from "./mocks/testRoutineWithReferences.json";
 import queryTableMock from "./mocks/queryTable.json";
 import retrieveTableMock from "./mocks/retrieveTable.json";
 import fs from "fs";
@@ -40,6 +41,7 @@ describe(parse, () => {
           {
             type: "TextSpan",
             string: "Parágrafo",
+            link: null,
             decorations: {
               bold: false,
               color: null,
@@ -68,6 +70,7 @@ describe(parse, () => {
         {
           type: "TextSpan",
           string: "Seção com um parágrafo.",
+          link: null,
           decorations: {
             bold: false,
             color: null,
@@ -297,7 +300,56 @@ describe(parse, () => {
         },
       ],
     } as Section;
+    expect(sections[0]).toMatchObject(expectedSection);
+  });
 
+  it("should create the references", async () => {
+    const sections = await parse(
+      testRoutineWithReferences.results,
+      fetchImageMock,
+      fetchTableMock,
+      fetchChildren
+    );
+    const expectedSection = {
+      plainTitle: "Referências",
+      children: [
+        {
+          type: "List",
+          kind: "ordered",
+          items: [
+            {
+              type: "ListItem",
+              text: {
+                type: "RichText",
+                spans: [
+                  {
+                    string:
+                      "Farhat CK, Carvalho ES, Carvalho LH, Succi RC, editors. Infectologia Pediátrica. 3.ed. São Paulo: Atheneu; 2007.",
+                  },
+                ],
+              },
+            },
+            {
+              type: "ListItem",
+              text: {
+                type: "RichText",
+                spans: [
+                  {
+                    string:
+                      "Gomes, PB, Melo MOCB, Duarte MA, Torres MRF, Xavier AT (2011). Polietilenoglicol na constipação intestinal crônica funcional em crianças. Revista Paulista de Pediatria, 29(2),245-250. https://dx.doi.org/10.1590/S0103-05822011000200017",
+                    link: {
+                      type: "url",
+                      url: "https://dx.doi.org/10.1590/S0103-05822011000200017",
+                    },
+                  },
+                ],
+              },
+              children: null,
+            },
+          ],
+        },
+      ],
+    } as Section;
     expect(sections[0]).toMatchObject(expectedSection);
   });
 });
