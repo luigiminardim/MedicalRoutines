@@ -8,6 +8,7 @@ import { Routine } from "@monorepo/domain/dist/modules/routines/entities/Routine
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionAuthorsRepository } from "../authors";
 import { NotionCategoriesRepository } from "../categories";
+import { NotionContentsRepository } from "../content";
 
 export class NotionRoutineRepository
   implements IGetRoutineGateway, IGetRoutinesGateway
@@ -15,7 +16,8 @@ export class NotionRoutineRepository
   constructor(
     private client: NotionClient,
     private authorsRespository: NotionAuthorsRepository,
-    private categoriesRepository: NotionCategoriesRepository
+    private categoriesRepository: NotionCategoriesRepository,
+    private contentRepository: NotionContentsRepository
   ) {}
 
   private async buildRoutine(page: GetPageResponse): Promise<Routine> {
@@ -59,7 +61,7 @@ export class NotionRoutineRepository
       name,
       categories: categories,
       tags,
-      sections: [],
+      sections: await this.contentRepository.getSections(page.id),
       authors: authors,
     };
   }

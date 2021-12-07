@@ -25,7 +25,7 @@ export class NotionContentsRepository {
     return { database, query };
   }
 
-  async fetchChildren(blockId: string) {
+  private async fetchChildren(blockId: string) {
     return (await this.client.blocks.children.list({ block_id: blockId }))
       .results;
   }
