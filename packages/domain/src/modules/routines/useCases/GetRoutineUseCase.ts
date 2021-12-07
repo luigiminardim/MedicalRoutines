@@ -1,11 +1,18 @@
 import { Routine } from "../entities/Routine";
-import { IRoutineRepository } from "../interfaces/IRoutineRepository";
+
+export type GetRoutineDtoInput = {
+  id: string;
+};
+
+export interface IGetRoutineGateway {
+  getRoutine(input: GetRoutineDtoInput): Promise<Routine | null>;
+}
 
 export class GetRoutineUseCase {
-  constructor(private routineRepository: IRoutineRepository) {}
+  constructor(private routineGateway: IGetRoutineGateway) {}
 
-  public async getRoutine(id: Routine["id"]): Promise<Routine | null> {
-    const routine = await this.routineRepository.getRoutine(id);
+  public async getRoutine(input: GetRoutineDtoInput): Promise<Routine | null> {
+    const routine = await this.routineGateway.getRoutine(input);
     return routine;
   }
 }

@@ -1,8 +1,8 @@
 import { Client as NotionClient } from "@notionhq/client";
-import { Category, ICategoriesRepository } from "@monorepo/domain";
+import { Category, IGetCategoriesGateway } from "@monorepo/domain";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 
-export class NotionCategoriesRepository implements ICategoriesRepository {
+export class NotionCategoriesRepository implements IGetCategoriesGateway {
   constructor(private client: NotionClient) {}
 
   private buildCategory(page: GetPageResponse): Category {
@@ -24,16 +24,15 @@ export class NotionCategoriesRepository implements ICategoriesRepository {
       .join();
 
     return {
-      id: page.id,
+      id: slug,
       name: name,
-      slug: slug,
       colorTheme,
     };
   }
 
-  async getCategory(categoryId: Category["id"]): Promise<Category> {
+  async getCategory(categoryNotionId: Category["id"]): Promise<Category> {
     const categoryPage = await this.client.pages.retrieve({
-      page_id: categoryId,
+      page_id: categoryNotionId,
     });
     const category = this.buildCategory(categoryPage);
     return category;

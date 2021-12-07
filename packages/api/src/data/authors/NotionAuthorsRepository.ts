@@ -1,8 +1,8 @@
 import { Client as NotionClient } from "@notionhq/client";
-import { Author, IAuthorsRepository } from "@monorepo/domain";
+import { Author, IGetAuthorsGateway } from "@monorepo/domain";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 
-export class NotionAuthorsRepository implements IAuthorsRepository {
+export class NotionAuthorsRepository implements IGetAuthorsGateway {
   constructor(private client: NotionClient) {}
 
   private buildAuthor(page: GetPageResponse): Author {
@@ -10,11 +10,6 @@ export class NotionAuthorsRepository implements IAuthorsRepository {
     if (nameProperty?.type !== "title")
       throw Error(`Invalid author page title. Author id: ${page.id}`);
     const name = nameProperty.title.map((text) => text.plain_text).join();
-
-    const slugProperty = page.properties["slug"];
-    if (slugProperty?.type !== "rich_text")
-      throw Error(`Invalid routine page slug. Author id: ${page.id}`);
-    const slug = slugProperty.rich_text.map((text) => text.plain_text).join();
 
     const avatarProperty = page.properties["avatar"];
     if (avatarProperty?.type !== "files")
@@ -34,17 +29,15 @@ export class NotionAuthorsRepository implements IAuthorsRepository {
       );
 
     return {
-      id: page.id,
       name: name,
-      slug: slug,
       avatarUrl,
       lattesCurriculumUrl,
     };
   }
 
-  async getAuthor(authorId: string): Promise<Author> {
+  async getAuthor(authorNotionId: string): Promise<Author> {
     const authorPage = await this.client.pages.retrieve({
-      page_id: authorId,
+      page_id: authorNotionId,
     });
     const author = this.buildAuthor(authorPage);
     return author;

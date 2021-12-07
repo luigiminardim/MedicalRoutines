@@ -1,11 +1,13 @@
 import { Author } from "../entities/Author";
-import { IAuthorsRepository } from "../interfaces/IAuthorsRepository";
+export interface IGetAuthorsGateway {
+  getAuthors(): Promise<Array<Author>>;
+}
 
 export class GetAuthorsUseCase {
-  constructor(private authorsRespository: IAuthorsRepository) {}
+  constructor(private authorsGateway: IGetAuthorsGateway) {}
 
   public async getAuthors(): Promise<Array<Author>> {
-    const authors = await this.authorsRespository.getAuthors();
+    const authors = await this.authorsGateway.getAuthors();
     return authors;
   }
 }

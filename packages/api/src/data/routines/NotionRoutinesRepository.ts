@@ -1,11 +1,17 @@
 import { Client as NotionClient } from "@notionhq/client";
-import { IRoutineRepository } from "@monorepo/domain";
+import {
+  IGetRoutinesGateway,
+  IGetRoutineGateway,
+  GetRoutineDtoInput,
+} from "@monorepo/domain";
 import { Routine } from "@monorepo/domain/dist/modules/routines/entities/Routine";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionAuthorsRepository } from "../authors";
 import { NotionCategoriesRepository } from "../categories";
 
-export class NotionRoutineRepository implements IRoutineRepository {
+export class NotionRoutineRepository
+  implements IGetRoutineGateway, IGetRoutinesGateway
+{
   constructor(
     private client: NotionClient,
     private authorsRespository: NotionAuthorsRepository,
@@ -34,7 +40,9 @@ export class NotionRoutineRepository implements IRoutineRepository {
     const authors = await Promise.all(
       authorsProperty.relation
         .map((x) => x.id)
-        .map((authorId) => this.authorsRespository.getAuthor(authorId))
+        .map((authorNotionId) =>
+          this.authorsRespository.getAuthor(authorNotionId)
+        )
     );
 
     const categoriesProperty = page.properties["categories"];
@@ -47,8 +55,7 @@ export class NotionRoutineRepository implements IRoutineRepository {
     );
 
     return {
-      id: page.id,
-      slug: slug,
+      id: slug,
       name,
       categories: categories,
       tags,
@@ -57,17 +64,24 @@ export class NotionRoutineRepository implements IRoutineRepository {
     };
   }
 
-  async getRoutine(routineId: string): Promise<Routine | null> {
-    const page = await this.client.pages.retrieve({
-      page_id: routineId,
+  private routinesDatabaseId = "edfb99c1a7894667b332ab2e6d87fa1d";
+
+  async getRoutine(input: GetRoutineDtoInput): Promise<Routine | null> {
+    const queryReturn = await this.client.databases.query({
+      database_id: this.routinesDatabaseId,
+      filter: { property: "slug", text: { equals: input.id } },
     });
-    return this.buildRoutine(page);
+    const page = queryReturn.results[0];
+    if (page) {
+      return this.buildRoutine(page);
+    } else {
+      return null;
+    }
   }
 
   async getRoutines(): Promise<Routine[]> {
-    const routinesDatabaseId = "edfb99c1a7894667b332ab2e6d87fa1d";
     const routinesQuery = await this.client.databases.query({
-      database_id: routinesDatabaseId,
+      database_id: this.routinesDatabaseId,
       sorts: [{ property: "name", direction: "ascending" }],
     });
     const routines = Promise.all(

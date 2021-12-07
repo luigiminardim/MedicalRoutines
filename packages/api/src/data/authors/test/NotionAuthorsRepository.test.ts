@@ -1,7 +1,7 @@
 import { NotionAuthorsRepository } from "./../NotionAuthorsRepository";
-import { authorPageMock } from "./authorPage.mock";
+import authorsQueryMock from "./mocks/authorsQuery.json";
+import authorPageMock from "./mocks/authorPage.json";
 import { Client as NotionClient } from "@notionhq/client";
-import { queryAuthorsMock } from "./queryAuthors.mock";
 import { Author } from "@monorepo/domain";
 
 describe(NotionAuthorsRepository, () => {
@@ -10,7 +10,7 @@ describe(NotionAuthorsRepository, () => {
       retrieve: async () => authorPageMock,
     } as any,
     databases: {
-      query: async (databaseId: string) => queryAuthorsMock,
+      query: async (databaseId: string) => authorsQueryMock,
     } as any,
   } as NotionClient;
   const authorsRepository = new NotionAuthorsRepository(clientMock);
@@ -18,8 +18,6 @@ describe(NotionAuthorsRepository, () => {
   describe("getAuthor", () => {
     it("should correctly convert an author page into an Author", async () => {
       expect(await authorsRepository.getAuthor("any id")).toMatchObject({
-        id: "a0500b34-bcd2-48d8-a6e9-d0524940bd66",
-        slug: "ana-luiza",
         name: "Ana Luiza M. dos Santos",
         avatarUrl:
           "http://ft.unb.br/index.php?option=com_pessoas&view=pessoas&layout=perfil&id=99",
@@ -31,8 +29,8 @@ describe(NotionAuthorsRepository, () => {
   describe("getAuthors", () => {
     it("should convert the authors database into Author array", async () => {
       expect(await authorsRepository.getAuthors()).toMatchObject([
-        { id: "a0500b34-bcd2-48d8-a6e9-d0524940bd66" } as Author,
-        { id: "e766699f-b51f-40c4-8b82-f6b7124a4a56" } as Author,
+        { name: "Ana Luiza M. dos Santos" } as Author,
+        { name: "Carlos Henrique R. da Rocha" } as Author,
       ]);
     });
   });

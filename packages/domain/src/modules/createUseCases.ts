@@ -1,22 +1,32 @@
-import { GetAuthorsUseCase } from "./authors/useCases/GetAuthorsUseCases";
-import { GetRoutinesUseCase } from "./routines/useCases/GetRoutinesUseCase";
-import { IRoutineRepository } from "./routines/interfaces/IRoutineRepository";
-import { ICategoriesRepository } from "./categories/interfaces/ICategoriesRepository";
-import { GetCategoriesUseCase } from "./categories/useCases/GetCategoriesUseCase";
-import { GetRoutineUseCase } from "./routines/useCases/GetRoutineUseCase";
-import { IAuthorsRepository } from "./authors/interfaces/IAuthorsRepository";
+import {
+  GetAuthorsUseCase,
+  IGetAuthorsGateway,
+} from "./authors/useCases/GetAuthorsUseCases";
+import {
+  GetRoutinesUseCase,
+  IGetRoutinesGateway,
+} from "./routines/useCases/GetRoutinesUseCase";
+import {
+  GetCategoriesUseCase,
+  IGetCategoriesGateway,
+} from "./categories/useCases/GetCategoriesUseCase";
+import {
+  GetRoutineUseCase,
+  IGetRoutineGateway,
+} from "./routines/useCases/GetRoutineUseCase";
 
 export const createUseCases = (
-  authorsRepository: IAuthorsRepository,
-  categoriesRepository: ICategoriesRepository,
-  routinesRepository: IRoutineRepository
+  getAuthorsGateway: IGetAuthorsGateway,
+  getCategoriesGateway: IGetCategoriesGateway,
+  getRoutineGateway: IGetRoutineGateway,
+  getRoutinesGateway: IGetRoutinesGateway
 ) => {
-  const getAuthorsUseCase = new GetAuthorsUseCase(authorsRepository);
+  const getAuthorsUseCase = new GetAuthorsUseCase(getAuthorsGateway);
 
-  const getCategoriesUseCase = new GetCategoriesUseCase(categoriesRepository);
+  const getCategoriesUseCase = new GetCategoriesUseCase(getCategoriesGateway);
 
-  const getRoutineUseCase = new GetRoutineUseCase(routinesRepository);
-  const getRoutinesUseCase = new GetRoutinesUseCase(routinesRepository);
+  const getRoutineUseCase = new GetRoutineUseCase(getRoutineGateway);
+  const getRoutinesUseCase = new GetRoutinesUseCase(getRoutinesGateway);
 
   return {
     getAuthorsUseCase,

@@ -1,7 +1,12 @@
 import { Category } from "../../categories/entities/Category";
-import { GetRoutinesInput } from "../dto/GetRoutinesInput";
 import { Routine } from "../entities/Routine";
-import { IRoutineRepository } from "../interfaces/IRoutineRepository";
+
+type GetRoutinesDtoInput = {
+  filters?: {
+    search?: string;
+    categoryId?: Category["id"];
+  };
+};
 
 type RoutineSearchClassification = {
   routine: Routine;
@@ -44,7 +49,7 @@ const alphabeticSorter: RoutineSorter = (rsc1, rsc2) =>
   });
 
 const classifyRoutines =
-  (filters: GetRoutinesInput["filters"]) =>
+  (filters: GetRoutinesDtoInput["filters"]) =>
   (routine: Routine): RoutineSearchClassification => ({
     routine,
     categories: routine.categories,
@@ -61,7 +66,7 @@ const classifyRoutines =
 
 function searchRoutines(
   routines: Array<Routine>,
-  filters: GetRoutinesInput["filters"]
+  filters: GetRoutinesDtoInput["filters"]
 ): Array<Routine> {
   const filter: RoutineFilter = [
     categoryFilter(filters?.categoryId ?? null),
@@ -86,11 +91,17 @@ function searchRoutines(
     .map(({ routine }) => routine);
 }
 
-export class GetRoutinesUseCase {
-  constructor(private routineRepository: IRoutineRepository) {}
+export interface IGetRoutinesGateway {
+  getRoutines(): Promise<Array<Routine>>;
+}
 
-  public async getRoutines(input: GetRoutinesInput): Promise<Array<Routine>> {
-    const routines = await this.routineRepository
+export class GetRoutinesUseCase {
+  constructor(private routinesGateway: IGetRoutinesGateway) {}
+
+  public async getRoutines(
+    input: GetRoutinesDtoInput
+  ): Promise<Array<Routine>> {
+    const routines = await this.routinesGateway
       .getRoutines()
       .then((routines) => searchRoutines(routines, input.filters));
     return routines;

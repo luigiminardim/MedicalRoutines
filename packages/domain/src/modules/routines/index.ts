@@ -1,2 +1,3 @@
 export * from "./entities/Routine";
-export * from "./interfaces/IRoutineRepository";
+export * from "./useCases/GetRoutineUseCase";
+export * from "./useCases/GetRoutinesUseCase";
