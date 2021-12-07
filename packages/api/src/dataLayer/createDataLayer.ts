@@ -1,5 +1,5 @@
 import { Client as NotionClient } from "@notionhq/client";
-import { NOTION_TOKEN } from "./../constants";
+import { NOTION_TOKEN } from "../constants";
 import { NotionAuthorsRepository } from "./authors";
 import { NotionRoutineRepository } from "./routines";
 import { NotionCategoriesRepository } from "./categories";

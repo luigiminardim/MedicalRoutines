@@ -1,4 +1,4 @@
-import { parse, ContentParserContext } from "./../parse";
+import { parse, ContentParserContext } from "../parse";
 import { Figure, RichText, Section, TextSpan, Table } from "@monorepo/domain";
 import testRoutineWithParagraph from "./mocks/testRoutineWithParagraph.json";
 import testRoutineWithSubsection from "./mocks/testRoutineWithSubsections.json";

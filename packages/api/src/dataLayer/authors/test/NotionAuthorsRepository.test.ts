@@ -1,4 +1,4 @@
-import { NotionAuthorsRepository } from "./../NotionAuthorsRepository";
+import { NotionAuthorsRepository } from "../NotionAuthorsRepository";
 import authorsQueryMock from "./mocks/authorsQuery.json";
 import authorPageMock from "./mocks/authorPage.json";
 import { Client as NotionClient } from "@notionhq/client";

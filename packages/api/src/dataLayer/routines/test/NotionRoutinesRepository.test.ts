@@ -2,7 +2,7 @@ import { Author, Category, Routine } from "@monorepo/domain";
 import { Client as NotionClient } from "@notionhq/client";
 import { NotionAuthorsRepository } from "../../authors";
 import { NotionCategoriesRepository } from "../../categories";
-import { NotionRoutineRepository } from "./../NotionRoutinesRepository";
+import { NotionRoutineRepository } from "../NotionRoutinesRepository";
 import queryRoutinesMock from "./mocks/queryRoutines.json";
 
 describe(NotionRoutineRepository, () => {
