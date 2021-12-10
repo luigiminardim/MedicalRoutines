@@ -10,7 +10,7 @@ export default class RoutinesController extends ApiController {
     const _1week = 7 * 24 * 60 * 60;
     res.setHeader(
       "Cache-Control",
-      `s-max-age=${_1week}, stale-while-revalidate`
+      `s-maxage=${_1week}, stale-while-revalidate`
     );
     const routines = await getRoutinesUseCase.getRoutines({});
     return routines;
