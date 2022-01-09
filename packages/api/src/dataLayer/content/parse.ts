@@ -18,6 +18,7 @@ export type ContentParserContext = {
   blocks: any;
   sectionLevel: number;
   fetchImage: (url: string) => Promise<Buffer>;
+  saveImage: (imageId: string, imageBuffer: Buffer) => Promise<string>;
   fetchTable: (
     tableId: string
   ) => Promise<{ database: GetDatabaseResponse; query: QueryDatabaseResponse }>;
@@ -202,23 +203,24 @@ const paragraphParser: ContentParser<RichText> = async (context) => {
 };
 
 const figureParser: ContentParser<Figure> = async (context) => {
-  const { blocks } = context;
+  const { blocks, saveImage } = context;
   const [block0, ...blocks0] = blocks;
   if (block0?.type !== "image") {
     return null;
   } else {
-    const imageUrl =
+    const notionImageUrl =
       block0.image.type === "file"
         ? block0.image.file.url
         : block0.image.external.url;
-    const imageBuffer = await context.fetchImage(imageUrl);
+    const imageBuffer = await context.fetchImage(notionImageUrl);
     const { height, width, type } = sizeOf(imageBuffer);
+    const savedImageUrl = await saveImage(block0.id, imageBuffer);
     return {
       context: { ...context, blocks: blocks0 },
       content: {
         type: "Figure",
         image: {
-          base64: imageBuffer.toString("base64"),
+          url: savedImageUrl,
           format: type ?? "",
           width: width ?? 0,
           height: height ?? 0,
@@ -341,16 +343,21 @@ const contentParser: ContentParser<ContentBlock> = async (context) => {
   );
 };
 
-export const parse = async (
-  blocks: any,
-  fetchImage: ContentParserContext["fetchImage"],
-  fetchTable: ContentParserContext["fetchTable"],
-  fetchChildren: ContentParserContext["fetchChildren"]
-): Promise<Array<Section>> => {
+export const parse = async ({
+  blocks,
+  fetchImage,
+  saveImage,
+  fetchTable,
+  fetchChildren,
+}: Pick<
+  ContentParserContext,
+  "blocks" | "fetchImage" | "saveImage" | "fetchTable" | "fetchChildren"
+>): Promise<Array<Section>> => {
   const parserResult = await arrayParserCombiner(sectionParser)({
     blocks,
     sectionLevel: 0,
     fetchImage,
+    saveImage,
     fetchTable,
     fetchChildren,
   });

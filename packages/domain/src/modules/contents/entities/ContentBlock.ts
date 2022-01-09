@@ -35,7 +35,7 @@ export type Figure = {
   type: "Figure";
   image: {
     format: string;
-    base64: string;
+    url: string;
     width?: number;
     height?: number;
   };

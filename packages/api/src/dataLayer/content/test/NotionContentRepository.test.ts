@@ -15,25 +15,31 @@ import fs from "fs";
 
 describe(parse, () => {
   const fetchImageMock: ContentParserContext["fetchImage"] = async (anyUrl) =>
-    fs.readFileSync("packages/api/src/data/content/test/mocks/test image.png");
+    fs.readFileSync(
+      "packages/api/src/dataLayer/content/test/mocks/test image.png"
+    );
 
   const fetchTableMock: ContentParserContext["fetchTable"] = async (anyUrl) =>
     ({ database: retrieveTableMock, query: queryTableMock } as any);
 
-  const fetchChildren = async (blockId: string) =>
+  const fetchChildrenMock = async (blockId: string) =>
     blockId === "7015eebd-3e1a-4e5a-8658-6865ea30d795"
       ? listChildren1
       : blockId === "289c3fff-e73e-4708-803a-537b95607ab4"
       ? listChildren2
       : null;
 
+  const saveImageMock = async (imageName: string, imageBuffer: Buffer) =>
+    "any url";
+
   it("should create section when reaching a heading_1", async () => {
-    const sections = await parse(
-      testRoutineWithParagraph.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithParagraph.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedFirstSection: Partial<Section> = {
       title: {
         type: "RichText",
@@ -58,12 +64,13 @@ describe(parse, () => {
   });
 
   it("should convert a page with one paragraph into a section with one paragraph", async () => {
-    const sections = await parse(
-      testRoutineWithParagraph.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithParagraph.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedParagraph: RichText = {
       type: "RichText",
       spans: [
@@ -86,12 +93,13 @@ describe(parse, () => {
   });
 
   it("should indentify sections and subsections", async () => {
-    const sections = await parse(
-      testRoutineWithSubsection.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithSubsection.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedSection = {
       type: "Section",
       plainTitle: "Seção",
@@ -113,12 +121,13 @@ describe(parse, () => {
   });
 
   it("should convert paragraphs to rich text", async () => {
-    const sections = await parse(
-      testRoutineWithRichText.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithRichText.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedSection = {
       plainTitle: "Texto rico",
       children: [
@@ -151,12 +160,13 @@ describe(parse, () => {
   });
 
   it("should correctly convert figures", async () => {
-    const sections = await parse(
-      testRoutineWithFigure.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithFigure.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedSection = {
       plainTitle: "Figura",
       children: [
@@ -178,12 +188,13 @@ describe(parse, () => {
   });
 
   it("should correctly convert tables", async () => {
-    const sections = await parse(
-      testRoutineWithTable.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithTable.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedSection = {
       plainTitle: "Tabela",
       children: [
@@ -236,12 +247,13 @@ describe(parse, () => {
   });
 
   it("should covert a numbered list", async () => {
-    const sections = await parse(
-      testRoutineWithNumberedList.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithNumberedList.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedSection = {
       plainTitle: "Listas",
       children: [
@@ -304,12 +316,13 @@ describe(parse, () => {
   });
 
   it("should create the references", async () => {
-    const sections = await parse(
-      testRoutineWithReferences.results,
-      fetchImageMock,
-      fetchTableMock,
-      fetchChildren
-    );
+    const sections = await parse({
+      blocks: testRoutineWithReferences.results,
+      fetchImage: fetchImageMock,
+      fetchTable: fetchTableMock,
+      fetchChildren: fetchChildrenMock,
+      saveImage: saveImageMock,
+    });
     const expectedSection = {
       plainTitle: "Referências",
       children: [

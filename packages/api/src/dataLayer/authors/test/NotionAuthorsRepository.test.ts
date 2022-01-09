@@ -1,6 +1,7 @@
+import { NotionOrganizationsRepository } from "./../../organizations/NotionOrganizationsRepository";
 import { NotionAuthorsRepository } from "../NotionAuthorsRepository";
 import authorsQueryMock from "./mocks/authorsQuery.json";
-import authorPageMock from "./mocks/authorPage.json";
+import authorPageMock from "./mocks/authorPage.json"; // https://api.notion.com/v1/pages/a0500b34-bcd2-48d8-a6e9-d0524940bd66
 import { Client as NotionClient } from "@notionhq/client";
 import { Author } from "@monorepo/domain";
 
@@ -13,12 +14,20 @@ describe(NotionAuthorsRepository, () => {
       query: async (databaseId: string) => authorsQueryMock,
     } as any,
   } as NotionClient;
-  const authorsRepository = new NotionAuthorsRepository(clientMock);
+  const organizationsRepositoryMock = {
+    getOrganizationId: async (slug: string) => "any id",
+  } as NotionOrganizationsRepository;
+  const authorsRepository = new NotionAuthorsRepository(
+    clientMock,
+    organizationsRepositoryMock
+  );
 
   describe("getAuthor", () => {
     it("should correctly convert an author page into an Author", async () => {
-      expect(await authorsRepository.getAuthor("any id")).toMatchObject({
-        name: "Ana Luiza M. dos Santos",
+      expect(
+        await authorsRepository.getAuthorById("any page id")
+      ).toMatchObject({
+        name: "Eduardo Lemos Rocha",
         avatarUrl:
           "http://ft.unb.br/index.php?option=com_pessoas&view=pessoas&layout=perfil&id=99",
         lattesCurriculumUrl: "http://lattes.cnpq.br/1989010115232505",
@@ -28,9 +37,11 @@ describe(NotionAuthorsRepository, () => {
 
   describe("getAuthors", () => {
     it("should convert the authors database into Author array", async () => {
-      expect(await authorsRepository.getAuthors()).toMatchObject([
-        { name: "Ana Luiza M. dos Santos" } as Author,
-        { name: "Carlos Henrique R. da Rocha" } as Author,
+      expect(
+        await authorsRepository.getAuthors({ organizationSlug: "any slug" })
+      ).toMatchObject([
+        { name: "Eduardo Lemos Rocha" } as Author,
+        { name: "Luigi Minardi Ferreira Maia" } as Author,
       ]);
     });
   });

@@ -1,7 +1,7 @@
 import { Routine } from "../entities/Routine";
 
 export type GetRoutineDtoInput = {
-  id: string;
+  routineSlug: Routine["slug"];
 };
 
 export interface IGetRoutineGateway {

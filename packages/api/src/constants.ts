@@ -8,3 +8,6 @@ function getEnv(envKey: string): string {
 }
 
 export const NOTION_TOKEN = getEnv("NOTION_TOKEN");
+
+export const AWS_ACCESS_KEY_ID = getEnv("AWS_ACCESS_KEY_ID");
+export const AWS_SECRET_ACESS_KEY = getEnv("AWS_SECRET_ACESS_KEY");

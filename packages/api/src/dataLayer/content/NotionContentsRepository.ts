@@ -1,8 +1,23 @@
 import { parse } from "./parse";
 import axios from "axios";
-import { Section } from "@monorepo/domain";
+import type { Section, Routine, Organization } from "@monorepo/domain";
 import { Client as NotionClient } from "@notionhq/client";
 import { ListBlockChildrenResponse } from "@notionhq/client/build/src/api-endpoints";
+
+export type UploadImageInput = {
+  organizationSlug: Organization["slug"];
+  routineSlug: Routine["slug"];
+  imageName: string;
+  imageBuffer: Buffer;
+};
+
+export type UploadImageOutput = {
+  url: string;
+};
+
+export interface IImageRepository {
+  uploadRoutineImage(input: UploadImageInput): Promise<UploadImageOutput>;
+}
 
 export class NotionContentsRepository {
   constructor(private client: NotionClient) {}
@@ -30,17 +45,21 @@ export class NotionContentsRepository {
       .results;
   }
 
-  async getSections(pageId: string): Promise<Array<Section>> {
+  async getSections(
+    pageId: string,
+    uploadImage: (imageId: string, imageBuffer: Buffer) => Promise<string>
+  ): Promise<Array<Section>> {
     const blockChildren: ListBlockChildrenResponse =
       await this.client.blocks.children.list({
         block_id: pageId,
       });
-    const sections = await parse(
-      blockChildren.results,
-      (url: string) => this.fetchImage(url),
-      (tableId: string) => this.fetchTable(tableId),
-      (blockId: string) => this.fetchChildren(blockId)
-    );
+    const sections = await parse({
+      blocks: blockChildren.results,
+      fetchImage: (url: string) => this.fetchImage(url),
+      saveImage: uploadImage,
+      fetchTable: (tableId: string) => this.fetchTable(tableId),
+      fetchChildren: (blockId: string) => this.fetchChildren(blockId),
+    });
     return sections;
   }
 }

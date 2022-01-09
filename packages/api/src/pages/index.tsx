@@ -8,7 +8,7 @@ const Home: NextPage = () => {
 export default Home;
 
 export const getStaticProps: GetStaticProps = () => {
-  getRoutineUseCase.getRoutine({ id: "62ef44b15c064a7b9812e45960c9e4ce" });
+  getRoutineUseCase.getRoutine({ routineSlug: "test" });
   return {
     props: {},
   };

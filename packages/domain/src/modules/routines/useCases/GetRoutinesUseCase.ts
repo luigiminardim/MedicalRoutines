@@ -1,10 +1,12 @@
 import { Category } from "../../categories/entities/Category";
+import { Organization } from "../../organizations";
 import { Routine } from "../entities/Routine";
 
 type GetRoutinesDtoInput = {
+  organizationSlug: Organization["slug"];
   filters?: {
     search?: string;
-    categoryId?: Category["id"];
+    categoryId?: Category["slug"];
   };
 };
 
@@ -33,10 +35,10 @@ const findSearch = (text: string, search: string): number =>
   normalizeString(text).indexOf(normalizeString(search));
 
 const categoryFilter =
-  (categoryId: Category["id"] | null): RoutineFilter =>
+  (categorySlug: Category["slug"] | null): RoutineFilter =>
   (rsc) =>
-    !categoryId ||
-    rsc.categories.some((category) => category.id === categoryId);
+    !categorySlug ||
+    rsc.categories.some((category) => category.slug === categorySlug);
 
 const searchFilter: RoutineFilter = (rsc) =>
   rsc.idxFindedName !== Infinity ||
@@ -91,8 +93,12 @@ function searchRoutines(
     .map(({ routine }) => routine);
 }
 
+export type GetRoutinesGatewayInput = {
+  organizationSlug: Organization["slug"];
+};
+
 export interface IGetRoutinesGateway {
-  getRoutines(): Promise<Array<Routine>>;
+  getRoutines(input: GetRoutinesGatewayInput): Promise<Array<Routine>>;
 }
 
 export class GetRoutinesUseCase {
@@ -102,7 +108,7 @@ export class GetRoutinesUseCase {
     input: GetRoutinesDtoInput
   ): Promise<Array<Routine>> {
     const routines = await this.routinesGateway
-      .getRoutines()
+      .getRoutines({ organizationSlug: input.organizationSlug })
       .then((routines) => searchRoutines(routines, input.filters));
     return routines;
   }

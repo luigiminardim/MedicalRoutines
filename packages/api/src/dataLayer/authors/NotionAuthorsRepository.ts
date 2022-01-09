@@ -1,9 +1,17 @@
+import { NotionOrganizationsRepository } from "../organizations";
 import { Client as NotionClient } from "@notionhq/client";
-import { Author, IGetAuthorsGateway } from "@monorepo/domain";
+import {
+  Author,
+  IGetAuthorsGateway,
+  GetAuthorsDtoInput,
+} from "@monorepo/domain";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 
 export class NotionAuthorsRepository implements IGetAuthorsGateway {
-  constructor(private client: NotionClient) {}
+  constructor(
+    private client: NotionClient,
+    private organizationsRepository: NotionOrganizationsRepository
+  ) {}
 
   private buildAuthor(page: GetPageResponse): Author {
     const nameProperty = page.properties["name"];
@@ -29,24 +37,32 @@ export class NotionAuthorsRepository implements IGetAuthorsGateway {
       );
 
     return {
+      id: page.id,
       name: name,
       avatarUrl,
       lattesCurriculumUrl,
     };
   }
 
-  async getAuthor(authorNotionId: string): Promise<Author> {
+  async getAuthorById(id: Author["id"]): Promise<Author> {
     const authorPage = await this.client.pages.retrieve({
-      page_id: authorNotionId,
+      page_id: id,
     });
     const author = this.buildAuthor(authorPage);
     return author;
   }
 
-  async getAuthors(): Promise<Author[]> {
+  async getAuthors(input: GetAuthorsDtoInput): Promise<Author[]> {
     const authorsDatabaseId = "59a40af1c99246fda5842e1e768ee131";
+    const organizationId = await this.organizationsRepository.getOrganizationId(
+      input.organizationSlug
+    );
     const authorsQuery = await this.client.databases.query({
       database_id: authorsDatabaseId,
+      filter: {
+        property: "organization",
+        relation: { contains: organizationId },
+      },
     });
     const authors = authorsQuery.results.map((authorsPage) =>
       this.buildAuthor(authorsPage)

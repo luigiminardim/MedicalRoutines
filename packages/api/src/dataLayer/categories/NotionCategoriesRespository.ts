@@ -1,9 +1,17 @@
+import { NotionOrganizationsRepository } from "./../organizations";
 import { Client as NotionClient } from "@notionhq/client";
-import { Category, IGetCategoriesGateway } from "@monorepo/domain";
+import {
+  Category,
+  IGetCategoriesGateway,
+  GetCategoriesDtoInput,
+} from "@monorepo/domain";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 
 export class NotionCategoriesRepository implements IGetCategoriesGateway {
-  constructor(private client: NotionClient) {}
+  constructor(
+    private client: NotionClient,
+    private organizationsRepository: NotionOrganizationsRepository
+  ) {}
 
   private buildCategory(page: GetPageResponse): Category {
     const nameProperty = page.properties["name"];
@@ -24,13 +32,13 @@ export class NotionCategoriesRepository implements IGetCategoriesGateway {
       .join();
 
     return {
-      id: slug,
+      slug,
       name: name,
       colorTheme,
     };
   }
 
-  async getCategory(categoryNotionId: Category["id"]): Promise<Category> {
+  async getCategoryById(categoryNotionId: string): Promise<Category> {
     const categoryPage = await this.client.pages.retrieve({
       page_id: categoryNotionId,
     });
@@ -38,10 +46,19 @@ export class NotionCategoriesRepository implements IGetCategoriesGateway {
     return category;
   }
 
-  async getCategories(): Promise<Category[]> {
+  async getCategories({
+    organizationSlug,
+  }: GetCategoriesDtoInput): Promise<Category[]> {
     const categoriesDatabaseId = "5ebe390563ab448aaec237febf1bb98d";
+    const organizationId = await this.organizationsRepository.getOrganizationId(
+      organizationSlug
+    );
     const categoriesQuery = await this.client.databases.query({
       database_id: categoriesDatabaseId,
+      filter: {
+        property: "organization",
+        relation: { contains: organizationId },
+      },
     });
     const categories = categoriesQuery.results.map((categoryPage) =>
       this.buildCategory(categoryPage)

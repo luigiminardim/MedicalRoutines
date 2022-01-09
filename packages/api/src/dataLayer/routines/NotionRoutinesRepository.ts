@@ -1,26 +1,35 @@
+import { AwsS3ImageRepository } from "./../content/AwsS3ImageRepository";
 import { Client as NotionClient } from "@notionhq/client";
 import {
   IGetRoutinesGateway,
   IGetRoutineGateway,
   GetRoutineDtoInput,
+  GetRoutinesGatewayInput,
+  Organization,
 } from "@monorepo/domain";
 import { Routine } from "@monorepo/domain/dist/modules/routines/entities/Routine";
 import { GetPageResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionAuthorsRepository } from "../authors";
 import { NotionCategoriesRepository } from "../categories";
 import { NotionContentsRepository } from "../content";
+import { NotionOrganizationsRepository } from "../organizations";
 
 export class NotionRoutineRepository
   implements IGetRoutineGateway, IGetRoutinesGateway
 {
   constructor(
     private client: NotionClient,
+    private organizationsRepository: NotionOrganizationsRepository,
     private authorsRespository: NotionAuthorsRepository,
     private categoriesRepository: NotionCategoriesRepository,
-    private contentRepository: NotionContentsRepository
+    private contentRepository: NotionContentsRepository,
+    private imageRespository: AwsS3ImageRepository
   ) {}
 
-  private async buildRoutine(page: GetPageResponse): Promise<Routine> {
+  private async buildRoutine(
+    page: GetPageResponse,
+    organizationSlug: Organization["slug"]
+  ): Promise<Routine> {
     const nameProperty = page.properties["name"];
     if (nameProperty?.type !== "title")
       throw Error(`Invalid routine page title. Routine id: ${page.id}`);
@@ -43,7 +52,7 @@ export class NotionRoutineRepository
       authorsProperty.relation
         .map((x) => x.id)
         .map((authorNotionId) =>
-          this.authorsRespository.getAuthor(authorNotionId)
+          this.authorsRespository.getAuthorById(authorNotionId)
         )
     );
 
@@ -53,16 +62,31 @@ export class NotionRoutineRepository
     const categories = await Promise.all(
       categoriesProperty.relation
         .map((x) => x.id)
-        .map((categoryId) => this.categoriesRepository.getCategory(categoryId))
+        .map((categoryId) =>
+          this.categoriesRepository.getCategoryById(categoryId)
+        )
+    );
+
+    const sections = await this.contentRepository.getSections(
+      page.id,
+      async (imageName, imageBuffer) => {
+        const { url } = await this.imageRespository.uploadRoutineImage({
+          imageBuffer,
+          imageName,
+          organizationSlug,
+          routineSlug: slug,
+        });
+        return url;
+      }
     );
 
     return {
-      id: slug,
+      slug,
       name,
-      categories: categories,
+      categories,
       tags,
-      sections: await this.contentRepository.getSections(page.id),
-      authors: authors,
+      sections,
+      authors,
     };
   }
 
@@ -71,23 +95,40 @@ export class NotionRoutineRepository
   async getRoutine(input: GetRoutineDtoInput): Promise<Routine | null> {
     const queryReturn = await this.client.databases.query({
       database_id: this.routinesDatabaseId,
-      filter: { property: "slug", text: { equals: input.id } },
+      filter: { property: "slug", text: { equals: input.routineSlug } },
     });
     const page = queryReturn.results[0];
+    const organizationProperty = page?.properties["organization"];
+    if (organizationProperty?.type !== "relation")
+      throw Error(`Invalid routine organization. Routine id: ${page?.id}`);
+    const organizationId = organizationProperty.relation[0]!.id;
+    const organization = await this.organizationsRepository.getOrganizationById(
+      organizationId
+    );
+
     if (page) {
-      return this.buildRoutine(page);
+      return this.buildRoutine(page, organization.slug);
     } else {
       return null;
     }
   }
 
-  async getRoutines(): Promise<Routine[]> {
+  async getRoutines(input: GetRoutinesGatewayInput): Promise<Routine[]> {
+    const organizationId = await this.organizationsRepository.getOrganizationId(
+      input.organizationSlug
+    );
     const routinesQuery = await this.client.databases.query({
       database_id: this.routinesDatabaseId,
+      filter: {
+        property: "organization",
+        relation: { contains: organizationId },
+      },
       sorts: [{ property: "name", direction: "ascending" }],
     });
-    const routines = Promise.all(
-      routinesQuery.results.map((routinePage) => this.buildRoutine(routinePage))
+    const routines = await Promise.all(
+      routinesQuery.results.map((routinePage) =>
+        this.buildRoutine(routinePage, input.organizationSlug)
+      )
     );
     return routines;
   }
