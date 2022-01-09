@@ -1,25 +1,20 @@
-import {
-  GetAuthorsUseCase,
-  IGetAuthorsGateway,
-} from "./authors/useCases/GetAuthorsUseCases";
+import { GetAuthorsUseCase, IGetAuthorsGateway } from "./authors";
 import {
   GetRoutinesUseCase,
   IGetRoutinesGateway,
-} from "./routines/useCases/GetRoutinesUseCase";
-import {
-  GetCategoriesUseCase,
-  IGetCategoriesGateway,
-} from "./categories/useCases/GetCategoriesUseCase";
-import {
   GetRoutineUseCase,
   IGetRoutineGateway,
-} from "./routines/useCases/GetRoutineUseCase";
+  GetRoutineContentUseCase,
+  IGetRoutineContentGateway,
+} from "./routines";
+import { GetCategoriesUseCase, IGetCategoriesGateway } from "./categories";
 
 export const createUseCases = (
   getAuthorsGateway: IGetAuthorsGateway,
   getCategoriesGateway: IGetCategoriesGateway,
   getRoutineGateway: IGetRoutineGateway,
-  getRoutinesGateway: IGetRoutinesGateway
+  getRoutinesGateway: IGetRoutinesGateway,
+  getRoutineContentGateway: IGetRoutineContentGateway
 ) => {
   const getAuthorsUseCase = new GetAuthorsUseCase(getAuthorsGateway);
 
@@ -27,11 +22,15 @@ export const createUseCases = (
 
   const getRoutineUseCase = new GetRoutineUseCase(getRoutineGateway);
   const getRoutinesUseCase = new GetRoutinesUseCase(getRoutinesGateway);
+  const getRoutinesContentUseCase = new GetRoutineContentUseCase(
+    getRoutineContentGateway
+  );
 
   return {
     getAuthorsUseCase,
     getCategoriesUseCase,
     getRoutineUseCase,
     getRoutinesUseCase,
+    getRoutinesContentUseCase,
   };
 };

@@ -16,7 +16,7 @@
     "test": "jest",
     "lint": "eslint --fix packages/*/src/**/*.{ts,tsx}",
     "domain": "lerna run --scope @monorepo/domain",
-    "api": "lerna run --scope @monorepo/api"
+    "api": "lerna run --scope @monorepo/api --parallel"
   },
   "lint-staged": {
     "**/*.test.{ts,tsx,js,jsx}": [

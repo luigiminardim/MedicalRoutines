@@ -62,7 +62,6 @@ describe(NotionRoutineRepository, () => {
         name: "Rotina Teste",
         tags: ["tag1", "tag2", "tag3", "tag4"],
         categories: [categoryMock, categoryMock, categoryMock],
-        sections: [],
         authors: [authorMock, authorMock],
       } as Routine);
     });

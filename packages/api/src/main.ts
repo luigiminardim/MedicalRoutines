@@ -8,9 +8,11 @@ export const {
   getCategoriesUseCase,
   getRoutineUseCase,
   getRoutinesUseCase,
+  getRoutinesContentUseCase,
 } = createUseCases(
   authorsRepository,
   categoriesRepository,
+  routinesRepository,
   routinesRepository,
   routinesRepository
 );
