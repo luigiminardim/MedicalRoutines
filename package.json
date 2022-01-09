@@ -14,7 +14,9 @@
     "dev:api": "lerna run --scope @monorepo/domain --scope @monorepo/api  --parallel dev",
     "prepare": "husky install",
     "test": "jest",
-    "lint": "eslint --fix packages/*/src/**/*.{ts,tsx}"
+    "lint": "eslint --fix packages/*/src/**/*.{ts,tsx}",
+    "domain": "lerna run --scope @monorepo/domain",
+    "api": "lerna run --scope @monorepo/api"
   },
   "lint-staged": {
     "**/*.test.{ts,tsx,js,jsx}": [
