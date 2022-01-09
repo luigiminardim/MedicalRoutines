@@ -74,15 +74,13 @@ export class NotionRoutineRepository
     const organization = await this.extractOrganization(page);
     const sections = await this.contentRepository.getSections(
       routineId,
-      async (imageName, imageBuffer) => {
-        const { url } = await this.imageRespository.uploadRoutineImage({
-          imageBuffer,
-          imageName,
+      (imageId, url) =>
+        this.imageRespository.saveImageFromUrl(url, {
+          type: "routine",
+          imageId,
           organizationSlug: organization.slug,
-          routineSlug: routineSlug,
-        });
-        return url;
-      }
+          routineSlug,
+        })
     );
     return sections;
   }

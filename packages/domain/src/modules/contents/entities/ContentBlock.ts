@@ -1,3 +1,5 @@
+import { ImageRecord } from "./ImageRecord";
+
 export type TextSpan = {
   type: "TextSpan";
   string: string;
@@ -33,12 +35,7 @@ export type List = {
 
 export type Figure = {
   type: "Figure";
-  image: {
-    format: string;
-    url: string;
-    width?: number;
-    height?: number;
-  };
+  image: ImageRecord;
   caption?: RichText;
 };
 

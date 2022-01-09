@@ -1,5 +1,12 @@
 import { parse, ContentParserContext } from "../parse";
-import { Figure, RichText, Section, TextSpan, Table } from "@monorepo/domain";
+import {
+  Figure,
+  RichText,
+  Section,
+  TextSpan,
+  Table,
+  ImageRecord,
+} from "@monorepo/domain";
 import testRoutineWithParagraph from "./mocks/testRoutineWithParagraph.json";
 import testRoutineWithSubsection from "./mocks/testRoutineWithSubsections.json";
 import testRoutineWithRichText from "./mocks/testRoutineWithRichText.json";
@@ -11,14 +18,8 @@ import listChildren2 from "./mocks/LilstItemChildren289c3fff-e73e-4708-803a-537b
 import testRoutineWithReferences from "./mocks/testRoutineWithReferences.json";
 import queryTableMock from "./mocks/queryTable.json";
 import retrieveTableMock from "./mocks/retrieveTable.json";
-import fs from "fs";
 
 describe(parse, () => {
-  const fetchImageMock: ContentParserContext["fetchImage"] = async (anyUrl) =>
-    fs.readFileSync(
-      "packages/api/src/dataLayer/content/test/mocks/test image.png"
-    );
-
   const fetchTableMock: ContentParserContext["fetchTable"] = async (anyUrl) =>
     ({ database: retrieveTableMock, query: queryTableMock } as any);
 
@@ -29,13 +30,19 @@ describe(parse, () => {
       ? listChildren2
       : null;
 
-  const saveImageMock = async (imageName: string, imageBuffer: Buffer) =>
-    "any url";
+  const saveImageMock = async (
+    imageId: string,
+    imageUrl: string
+  ): Promise<ImageRecord> => ({
+    format: "png",
+    height: 100,
+    width: 200,
+    url: "any url",
+  });
 
   it("should create section when reaching a heading_1", async () => {
     const sections = await parse({
       blocks: testRoutineWithParagraph.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -66,7 +73,6 @@ describe(parse, () => {
   it("should convert a page with one paragraph into a section with one paragraph", async () => {
     const sections = await parse({
       blocks: testRoutineWithParagraph.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -95,7 +101,6 @@ describe(parse, () => {
   it("should indentify sections and subsections", async () => {
     const sections = await parse({
       blocks: testRoutineWithSubsection.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -123,7 +128,6 @@ describe(parse, () => {
   it("should convert paragraphs to rich text", async () => {
     const sections = await parse({
       blocks: testRoutineWithRichText.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -162,7 +166,6 @@ describe(parse, () => {
   it("should correctly convert figures", async () => {
     const sections = await parse({
       blocks: testRoutineWithFigure.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -190,7 +193,6 @@ describe(parse, () => {
   it("should correctly convert tables", async () => {
     const sections = await parse({
       blocks: testRoutineWithTable.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -249,7 +251,6 @@ describe(parse, () => {
   it("should covert a numbered list", async () => {
     const sections = await parse({
       blocks: testRoutineWithNumberedList.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,
@@ -318,7 +319,6 @@ describe(parse, () => {
   it("should create the references", async () => {
     const sections = await parse({
       blocks: testRoutineWithReferences.results,
-      fetchImage: fetchImageMock,
       fetchTable: fetchTableMock,
       fetchChildren: fetchChildrenMock,
       saveImage: saveImageMock,

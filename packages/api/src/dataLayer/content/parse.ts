@@ -2,7 +2,7 @@ import {
   GetDatabaseResponse,
   QueryDatabaseResponse,
 } from "@notionhq/client/build/src/api-endpoints";
-import sizeOf from "image-size";
+
 import {
   RichText,
   TextSpan,
@@ -12,13 +12,13 @@ import {
   Table,
   ListItem,
   List,
+  ImageRecord,
 } from "@monorepo/domain";
 
 export type ContentParserContext = {
   blocks: any;
   sectionLevel: number;
-  fetchImage: (url: string) => Promise<Buffer>;
-  saveImage: (imageId: string, imageBuffer: Buffer) => Promise<string>;
+  saveImage: (imageId: string, imageUrl: string) => Promise<ImageRecord>;
   fetchTable: (
     tableId: string
   ) => Promise<{ database: GetDatabaseResponse; query: QueryDatabaseResponse }>;
@@ -212,19 +212,12 @@ const figureParser: ContentParser<Figure> = async (context) => {
       block0.image.type === "file"
         ? block0.image.file.url
         : block0.image.external.url;
-    const imageBuffer = await context.fetchImage(notionImageUrl);
-    const { height, width, type } = sizeOf(imageBuffer);
-    const savedImageUrl = await saveImage(block0.id, imageBuffer);
+    const image = await saveImage(block0.id, notionImageUrl);
     return {
       context: { ...context, blocks: blocks0 },
       content: {
         type: "Figure",
-        image: {
-          url: savedImageUrl,
-          format: type ?? "",
-          width: width ?? 0,
-          height: height ?? 0,
-        },
+        image,
         caption: block0.image.caption
           ? richTextConverter(block0.image.caption)
           : undefined,
@@ -345,18 +338,16 @@ const contentParser: ContentParser<ContentBlock> = async (context) => {
 
 export const parse = async ({
   blocks,
-  fetchImage,
   saveImage,
   fetchTable,
   fetchChildren,
 }: Pick<
   ContentParserContext,
-  "blocks" | "fetchImage" | "saveImage" | "fetchTable" | "fetchChildren"
+  "blocks" | "saveImage" | "fetchTable" | "fetchChildren"
 >): Promise<Array<Section>> => {
   const parserResult = await arrayParserCombiner(sectionParser)({
     blocks,
     sectionLevel: 0,
-    fetchImage,
     saveImage,
     fetchTable,
     fetchChildren,
