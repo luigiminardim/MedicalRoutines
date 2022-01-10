@@ -1,3 +1,7 @@
+import {
+  GetOrganizationUseCase,
+  IGetOrganizationGateway,
+} from "./organizations";
 import { GetAuthorsUseCase, IGetAuthorsGateway } from "./authors";
 import {
   GetRoutinesUseCase,
@@ -10,12 +14,17 @@ import {
 import { GetCategoriesUseCase, IGetCategoriesGateway } from "./categories";
 
 export const createUseCases = (
+  getOrganizationGateway: IGetOrganizationGateway,
   getAuthorsGateway: IGetAuthorsGateway,
   getCategoriesGateway: IGetCategoriesGateway,
   getRoutineGateway: IGetRoutineGateway,
   getRoutinesGateway: IGetRoutinesGateway,
   getRoutineContentGateway: IGetRoutineContentGateway
 ) => {
+  const getOrganizationUseCase = new GetOrganizationUseCase(
+    getOrganizationGateway
+  );
+
   const getAuthorsUseCase = new GetAuthorsUseCase(getAuthorsGateway);
 
   const getCategoriesUseCase = new GetCategoriesUseCase(getCategoriesGateway);
@@ -27,6 +36,7 @@ export const createUseCases = (
   );
 
   return {
+    getOrganizationUseCase,
     getAuthorsUseCase,
     getCategoriesUseCase,
     getRoutineUseCase,

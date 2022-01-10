@@ -31,6 +31,7 @@ export function createDataLayer() {
     imageRepository
   );
   return {
+    organizationRepository,
     authorsRepository,
     routinesRepository,
     categoriesRepository,

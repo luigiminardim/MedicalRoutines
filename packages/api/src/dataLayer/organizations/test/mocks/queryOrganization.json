@@ -1,0 +1,105 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "page",
+      "id": "2fff299f-039a-4a1e-8e55-bbabc19dca7c",
+      "created_time": "2022-01-02T17:15:00.000Z",
+      "last_edited_time": "2022-01-09T00:09:00.000Z",
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "b1330a18-8f6d-499e-b4ba-ec789e00502b"
+      },
+      "archived": false,
+      "properties": {
+        "slug": {
+          "id": "DZF%60",
+          "type": "rich_text",
+          "rich_text": [
+            {
+              "type": "text",
+              "text": {
+                "content": "test-organization",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "test-organization",
+              "href": null
+            }
+          ]
+        },
+        "Related to Authors (Column)": {
+          "id": "QJ%7C%5D",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "e766699f-b51f-40c4-8b82-f6b7124a4a56"
+            },
+            {
+              "id": "a0500b34-bcd2-48d8-a6e9-d0524940bd66"
+            }
+          ]
+        },
+        "Related to Routines (organization)": {
+          "id": "jdza",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "62ef44b1-5c06-4a7b-9812-e45960c9e4ce"
+            }
+          ]
+        },
+        "Related to Categories (Column)": {
+          "id": "y%60x%5E",
+          "type": "relation",
+          "relation": [
+            {
+              "id": "d61dc1c3-cd1b-49c9-89a6-bea258b3d25e"
+            },
+            {
+              "id": "86af33fe-24e6-4ef8-90d5-83288d2b5015"
+            },
+            {
+              "id": "3cb1fb62-ff70-4ee8-bbaa-a58ccd45b757"
+            }
+          ]
+        },
+        "name": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Test Organization",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Test Organization",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/Test-Organization-2fff299f039a4a1e8e55bbabc19dca7c"
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false
+}
